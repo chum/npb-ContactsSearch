@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  ContactsSearchBarViewController.h
 //  ContactsSearch
 //
 //  Created by Olie on 10/28/14.
@@ -8,13 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface ContactsSearchBarViewController : UISearchController
     <UISearchBarDelegate, UISearchControllerDelegate,
     UISearchDisplayDelegate, UISearchResultsUpdating,
     UITableViewDataSource, UITableViewDelegate>
 
-@property(weak, nonatomic) IBOutlet UISearchBar *searchbar;
-@property(weak, nonatomic) IBOutlet UISearchController *searchController;
-
 @end
-

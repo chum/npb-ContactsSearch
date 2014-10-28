@@ -16,6 +16,7 @@
 		4DCC9D1619FFFCFD00FBCE70 /* ContactsSearchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DCC9D1519FFFCFD00FBCE70 /* ContactsSearchTests.m */; };
 		4DCC9D211A00012100FBCE70 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCC9D1F1A00012100FBCE70 /* AddressBook.framework */; };
 		4DCC9D221A00012100FBCE70 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCC9D201A00012100FBCE70 /* AddressBookUI.framework */; };
+		4DCC9D251A00091700FBCE70 /* ContactsSearchBarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DCC9D241A00091700FBCE70 /* ContactsSearchBarViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,8 @@
 		4DCC9D1519FFFCFD00FBCE70 /* ContactsSearchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactsSearchTests.m; sourceTree = "<group>"; };
 		4DCC9D1F1A00012100FBCE70 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		4DCC9D201A00012100FBCE70 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
+		4DCC9D231A00091700FBCE70 /* ContactsSearchBarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsSearchBarViewController.h; sourceTree = "<group>"; };
+		4DCC9D241A00091700FBCE70 /* ContactsSearchBarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsSearchBarViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,9 +72,8 @@
 		4DCC9CED19FFFCFD00FBCE70 = {
 			isa = PBXGroup;
 			children = (
-				4DCC9D1F1A00012100FBCE70 /* AddressBook.framework */,
-				4DCC9D201A00012100FBCE70 /* AddressBookUI.framework */,
 				4DCC9CF819FFFCFD00FBCE70 /* ContactsSearch */,
+				4DCC9D261A00092400FBCE70 /* Frameworks */,
 				4DCC9D1219FFFCFD00FBCE70 /* ContactsSearchTests */,
 				4DCC9CF719FFFCFD00FBCE70 /* Products */,
 			);
@@ -89,13 +91,10 @@
 		4DCC9CF819FFFCFD00FBCE70 /* ContactsSearch */ = {
 			isa = PBXGroup;
 			children = (
-				4DCC9CFD19FFFCFD00FBCE70 /* AppDelegate.h */,
-				4DCC9CFE19FFFCFD00FBCE70 /* AppDelegate.m */,
-				4DCC9D0019FFFCFD00FBCE70 /* ViewController.h */,
-				4DCC9D0119FFFCFD00FBCE70 /* ViewController.m */,
-				4DCC9D0319FFFCFD00FBCE70 /* Main.storyboard */,
-				4DCC9D0619FFFCFD00FBCE70 /* Images.xcassets */,
-				4DCC9D0819FFFCFD00FBCE70 /* LaunchScreen.xib */,
+				4DCC9D231A00091700FBCE70 /* ContactsSearchBarViewController.h */,
+				4DCC9D241A00091700FBCE70 /* ContactsSearchBarViewController.m */,
+				4DCC9D271A00093100FBCE70 /* App Support */,
+				4DCC9D281A00093800FBCE70 /* Main view */,
 				4DCC9CF919FFFCFD00FBCE70 /* Supporting Files */,
 			);
 			path = ContactsSearch;
@@ -125,6 +124,36 @@
 				4DCC9D1419FFFCFD00FBCE70 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4DCC9D261A00092400FBCE70 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4DCC9D1F1A00012100FBCE70 /* AddressBook.framework */,
+				4DCC9D201A00012100FBCE70 /* AddressBookUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4DCC9D271A00093100FBCE70 /* App Support */ = {
+			isa = PBXGroup;
+			children = (
+				4DCC9CFD19FFFCFD00FBCE70 /* AppDelegate.h */,
+				4DCC9CFE19FFFCFD00FBCE70 /* AppDelegate.m */,
+				4DCC9D0619FFFCFD00FBCE70 /* Images.xcassets */,
+				4DCC9D0819FFFCFD00FBCE70 /* LaunchScreen.xib */,
+			);
+			name = "App Support";
+			sourceTree = "<group>";
+		};
+		4DCC9D281A00093800FBCE70 /* Main view */ = {
+			isa = PBXGroup;
+			children = (
+				4DCC9D0019FFFCFD00FBCE70 /* ViewController.h */,
+				4DCC9D0119FFFCFD00FBCE70 /* ViewController.m */,
+				4DCC9D0319FFFCFD00FBCE70 /* Main.storyboard */,
+			);
+			name = "Main view";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -172,7 +201,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0610;
-				ORGANIZATIONNAME = ManyFriends.com;
+				ORGANIZATIONNAME = "No Plan B Production";
 				TargetAttributes = {
 					4DCC9CF519FFFCFD00FBCE70 = {
 						CreatedOnToolsVersion = 6.1;
@@ -230,6 +259,7 @@
 				4DCC9D0219FFFCFD00FBCE70 /* ViewController.m in Sources */,
 				4DCC9CFF19FFFCFD00FBCE70 /* AppDelegate.m in Sources */,
 				4DCC9CFC19FFFCFD00FBCE70 /* main.m in Sources */,
+				4DCC9D251A00091700FBCE70 /* ContactsSearchBarViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -352,7 +382,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = ContactsSearch/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -363,7 +393,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = ContactsSearch/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

@@ -1,22 +1,24 @@
 //
-//  ViewController.m
+//  ContactsSearchBarViewController.m
 //  ContactsSearch
 //
 //  Created by Olie on 10/28/14.
 //  Copyright (c) 2014 No Plan B Production. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "ContactsSearchBarViewController.h"
 
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
 
-@interface ViewController ()
+
+@interface ContactsSearchBarViewController ()
 @property(strong, nonatomic) NSMutableArray *tableItems;
 @end
 
 
-@implementation ViewController
+
+@implementation ContactsSearchBarViewController
 
 #pragma mark - Lifecycle
 
@@ -25,17 +27,8 @@
     [super viewDidLoad];
 
     _tableItems = [NSMutableArray new];
-}
 
-
-- (void) viewDidAppear: (BOOL) animated
-{
-    [super viewDidAppear: animated];
-
-    if ([_tableItems count] == 0)
-    {
-        [self updateContacts];
-    }
+    [self updateContacts];
 }
 
 
@@ -83,7 +76,7 @@
     {
         NSArray *allContacts = (__bridge NSArray*) ABAddressBookCopyArrayOfAllPeople (addressBook);
 
-        NSLog(@"%s [DEBUG] %lu contacts", __PRETTY_FUNCTION__,(unsigned long) (unsigned long) [allContacts count]);
+        NSLog(@"%s [DEBUG] %ld contacts", __PRETTY_FUNCTION__, (unsigned long)[allContacts count]);
 
         // If we want to do any sorting, do it here.
 
@@ -176,6 +169,5 @@
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController;
 {
 }
-
 
 @end
