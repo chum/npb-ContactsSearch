@@ -8,11 +8,11 @@
 
 #import "ContactsSearchDisplayController.h"
 
-#import <AddressBook/AddressBook.h>
-#import <AddressBookUI/AddressBookUI.h>
 
 
 @interface ContactsSearchDisplayController ()
+@property(strong, nonatomic) NSMutableArray *allContacts;
+@property(strong, nonatomic) NSString *previousSearchText;
 @property(strong, nonatomic) NSMutableArray *tableItems;
 @end
 
@@ -30,11 +30,24 @@
 }
 
 
+- (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName: nibNameOrNil bundle: nibBundleOrNil];
+    if (self)
+    {
+        _allContacts = [NSMutableArray new];
+        _tableItems  = [NSMutableArray new];
+        _previousSearchText = @"";
+    }
+
+    return self;
+}
+
+
+
 - (void) viewDidLoad
 {
     [super viewDidLoad];
-
-    _tableItems = [NSMutableArray new];
 
     [self updateContacts];
 }
@@ -69,7 +82,7 @@
 
 - (void) updateContacts
 {
-    [_tableItems removeAllObjects];
+    [_allContacts removeAllObjects];
 
     CFErrorRef error = nil;
     ABAddressBookRef addressBook = ABAddressBookCreateWithOptions (NULL, &error);
@@ -82,13 +95,13 @@
 
     if (accessGranted)
     {
-        NSArray *allContacts = (__bridge NSArray*) ABAddressBookCopyArrayOfAllPeople (addressBook);
+        NSArray *myContacts = (__bridge NSArray*) ABAddressBookCopyArrayOfAllPeople (addressBook);
 
-        NSLog(@"%s [DEBUG] %ld contacts", __PRETTY_FUNCTION__, (unsigned long)[allContacts count]);
+        NSLog(@"%s [DEBUG] %ld contacts", __PRETTY_FUNCTION__, (unsigned long)[myContacts count]);
 
         // If we want to do any sorting, do it here.
 
-        [_tableItems addObjectsFromArray: allContacts];
+        [_allContacts addObjectsFromArray: myContacts];
     }
     else
     {
@@ -102,7 +115,62 @@
 }
 
 
+- (void) updateTableItems
+{
+    NSArray *contacts = ([self.searchbar.text hasPrefix: _previousSearchText])
+                        ? [_tableItems copy]
+                        : [_allContacts copy];
+
+   [_tableItems removeAllObjects];
+       
+    int count = (int)[contacts count];
+    for (int index = 0 ; index < count ; ++index)
+    {
+        ABRecordRef contact = (__bridge ABRecordRef) ([contacts objectAtIndex: index]);
+        NSString *display = [ContactsSearchDisplayController displayStringForContact: contact];
+
+        //* FIXME: do correct filtering, as desired
+        NSString *matchString = self.searchbar.text;
+        if ([display rangeOfString: matchString].location != NSNotFound)
+        {
+            [_tableItems addObject: (__bridge id)(contact)];
+        }
+    }
+}
+
+
 #pragma mark - UITableViewDataSource
+
++ (NSString*) displayStringForContact: (ABRecordRef) contact
+{
+    // get contact info
+    NSString *firstName = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonFirstNameProperty));
+    NSString *lastName  = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonLastNameProperty));
+    NSString *displayString = [NSString stringWithFormat: @"%@, %@", lastName, firstName];
+
+    NSString *phoneNumber = [self phoneNumberForContact: contact];
+    if (phoneNumber != nil)
+    {
+        displayString = [displayString stringByAppendingFormat: @" : %@", phoneNumber];
+    }
+
+    return displayString;
+}
+
+
++ (NSString*) phoneNumberForContact: (ABRecordRef) contact
+{
+    NSString *result = nil;
+    ABMultiValueRef phoneNumbers = ABRecordCopyValue(contact, kABPersonPhoneProperty);
+
+    if (ABMultiValueGetCount(phoneNumbers) > 0)
+    {
+        result = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(phoneNumbers, 0);
+    }
+
+    return result;
+}
+
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 {
@@ -110,12 +178,9 @@
 }
 
 
-// Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
-// Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 {
-    NSString * const tableID = @"searchCellID";
+    NSString * const tableID = @"ContactsSearchDisplayController";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier: tableID];
     if (cell == nil)
     {
@@ -126,21 +191,7 @@
     // get contact
     int row = (int) [indexPath row];
     ABRecordRef contact = (__bridge ABRecordRef) ([_tableItems objectAtIndex: row]);
-
-    // get contact info
-    NSString *firstName = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonFirstNameProperty));
-    NSString *lastName  = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonLastNameProperty));
-    NSString *displayString = [NSString stringWithFormat: @"%@, %@", lastName, firstName];
-
-    ABMultiValueRef phoneNumbers = ABRecordCopyValue(contact, kABPersonPhoneProperty);
-
-    if (ABMultiValueGetCount(phoneNumbers) > 0)
-    {
-        NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(phoneNumbers, 0);
-        displayString = [displayString stringByAppendingFormat: @" : %@", phoneNumber];
-    }
-
-    cell.textLabel.text = displayString;
+    cell.textLabel.text = [ContactsSearchDisplayController displayStringForContact: contact];
 
     return cell;
 }
@@ -151,22 +202,24 @@
 
 #pragma mark - UISearchBarDelegate
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText;   // called when text changes (including clear)
+- (void) searchBar: (UISearchBar*) searchBar textDidChange: (NSString*) searchText; // called when text changes (including clear)
+{
+    //NSLog(@"%s", __PRETTY_FUNCTION__);
+    [self updateTableItems];
+}
+
+
+- (void) searchBarBookmarkButtonClicked: (UISearchBar*) searchBar;              // called when bookmark button pressed
 {
 }
 
 
-- (void)searchBarBookmarkButtonClicked:(UISearchBar *)searchBar;                   // called when bookmark button pressed
+- (void) searchBarCancelButtonClicked: (UISearchBar*) searchBar;                // called when cancel button pressed
 {
 }
 
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar;                     // called when cancel button pressed
-{
-}
-
-
-- (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar NS_AVAILABLE_IOS(3_2); // called when search results button pressed
+- (void) searchBarResultsListButtonClicked: (UISearchBar*) searchBar;           // called when search results button pressed
 {
 }
 
@@ -174,8 +227,10 @@
 #pragma mark - UISearchResultsUpdating
 
 // Called when the search bar's text or scope has changed or when the search bar becomes first responder.
-- (void)updateSearchResultsForSearchController:(UISearchController *)searchController;
+- (void) updateSearchResultsForSearchController: (UISearchController*) searchController;
 {
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+    [self updateTableItems];
 }
 
 @end

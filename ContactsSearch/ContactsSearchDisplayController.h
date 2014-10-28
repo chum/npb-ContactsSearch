@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import <AddressBook/AddressBook.h>
+
+
+@protocol ContactSearchDelegate <NSObject>
+- (void) contactSelected: (ABRecordRef) contact;
+@end
+
+
 @interface ContactsSearchDisplayController : UIViewController
     <UISearchBarDelegate, UISearchControllerDelegate,
     UISearchDisplayDelegate, UISearchResultsUpdating,
@@ -15,6 +23,9 @@
 
 + (ContactsSearchDisplayController*) csdc;
 
++ (NSString*) displayStringForContact: (ABRecordRef) contact;
++ (NSString*) phoneNumberForContact: (ABRecordRef) contact;
+
 @property(weak, nonatomic) IBOutlet UISearchBar *searchbar;
-@property(weak, nonatomic) IBOutlet UISearchController *searchController;
+@property(weak, nonatomic) IBOutlet UISearchController *searchDisplayController;
 @end
