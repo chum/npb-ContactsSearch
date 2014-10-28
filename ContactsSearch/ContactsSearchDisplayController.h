@@ -25,6 +25,7 @@
 
 + (NSString*) displayStringForContact: (ABRecordRef) contact;
 + (NSString*) phoneNumberForContact: (ABRecordRef) contact;
++ (BOOL) phoneNumberIsValid: (NSString*) phoneNumber;
 
 @property(weak, nonatomic) id<ContactSearchDelegate> csDelegate;
 

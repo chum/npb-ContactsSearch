@@ -9,10 +9,6 @@
 #import "ViewController.h"
 
 
-@interface ViewController ()
-@end
-
-
 @implementation ViewController
 
 #pragma mark - Lifecycle
@@ -26,14 +22,6 @@
     [self addChildViewController: vc];
     vc.view.frame = self.contentView.bounds;
     [self.contentView addSubview: vc.view];
-}
-
-
-- (void)didReceiveMemoryWarning
-{
-    NSLog(@"%s", __PRETTY_FUNCTION__);
-
-    [super didReceiveMemoryWarning];
 }
 
 

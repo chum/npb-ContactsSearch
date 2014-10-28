@@ -18,6 +18,7 @@
 		4DCC9D221A00012100FBCE70 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCC9D201A00012100FBCE70 /* AddressBookUI.framework */; };
 		4DCC9D2E1A000E5F00FBCE70 /* ContactsSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DCC9D2C1A000E5F00FBCE70 /* ContactsSearchDisplayController.m */; };
 		4DCC9D2F1A000E5F00FBCE70 /* ContactsSearchDisplayController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4DCC9D2D1A000E5F00FBCE70 /* ContactsSearchDisplayController.xib */; };
+		4DCC9D311A00369B00FBCE70 /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4DCC9D301A00369B00FBCE70 /* README.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		4DCC9D2B1A000E5F00FBCE70 /* ContactsSearchDisplayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsSearchDisplayController.h; sourceTree = "<group>"; };
 		4DCC9D2C1A000E5F00FBCE70 /* ContactsSearchDisplayController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsSearchDisplayController.m; sourceTree = "<group>"; };
 		4DCC9D2D1A000E5F00FBCE70 /* ContactsSearchDisplayController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactsSearchDisplayController.xib; sourceTree = "<group>"; };
+		4DCC9D301A00369B00FBCE70 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +76,7 @@
 		4DCC9CED19FFFCFD00FBCE70 = {
 			isa = PBXGroup;
 			children = (
+				4DCC9D301A00369B00FBCE70 /* README.txt */,
 				4DCC9CF819FFFCFD00FBCE70 /* ContactsSearch */,
 				4DCC9D261A00092400FBCE70 /* Frameworks */,
 				4DCC9D1219FFFCFD00FBCE70 /* ContactsSearchTests */,
@@ -243,6 +246,7 @@
 				4DCC9D0A19FFFCFD00FBCE70 /* LaunchScreen.xib in Resources */,
 				4DCC9D0719FFFCFD00FBCE70 /* Images.xcassets in Resources */,
 				4DCC9D2F1A000E5F00FBCE70 /* ContactsSearchDisplayController.xib in Resources */,
+				4DCC9D311A00369B00FBCE70 /* README.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,6 +460,7 @@
 				4DCC9D1B19FFFCFD00FBCE70 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4DCC9D1C19FFFCFD00FBCE70 /* Build configuration list for PBXNativeTarget "ContactsSearchTests" */ = {
 			isa = XCConfigurationList;
@@ -464,6 +469,7 @@
 				4DCC9D1E19FFFCFD00FBCE70 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

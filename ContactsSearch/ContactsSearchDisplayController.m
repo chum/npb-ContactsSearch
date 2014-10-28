@@ -80,6 +80,15 @@
 }
 
 
++ (BOOL) phoneNumberIsValid: (NSString*) phoneNumber
+{
+    //* FIXME: Use Sani's library routines to actually validate the phone #
+    //      Current code counts any non-nil phone# as valid
+
+    return ([phoneNumber length] > 0);
+}
+
+
 - (void) updateContacts
 {
     [_allContacts removeAllObjects];
@@ -99,7 +108,7 @@
 
         NSLog(@"%s [DEBUG] %ld contacts", __PRETTY_FUNCTION__, (unsigned long)[myContacts count]);
 
-        // If we want to do any sorting, do it here.
+        //* FIXME: If we want to do any sorting, do it here.
 
         [_allContacts addObjectsFromArray: myContacts];
     }
