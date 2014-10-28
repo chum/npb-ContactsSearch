@@ -26,6 +26,8 @@
 + (NSString*) displayStringForContact: (ABRecordRef) contact;
 + (NSString*) phoneNumberForContact: (ABRecordRef) contact;
 
+@property(weak, nonatomic) id<ContactSearchDelegate> csDelegate;
+
 @property(weak, nonatomic) IBOutlet UISearchBar *searchbar;
-@property(weak, nonatomic) IBOutlet UISearchController *searchDisplayController;
+//@property(weak, nonatomic) IBOutlet UISearchController *searchDisplayController;
 @end

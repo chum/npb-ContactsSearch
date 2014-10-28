@@ -8,8 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ContactsSearchDisplayController.h"
+
 
 @interface ViewController : UIViewController
+    <ContactSearchDelegate>
+
 @property(weak, nonatomic) IBOutlet UIView *contentView;
 @end
 

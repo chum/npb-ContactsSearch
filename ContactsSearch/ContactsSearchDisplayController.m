@@ -143,10 +143,30 @@
 
 + (NSString*) displayStringForContact: (ABRecordRef) contact
 {
+    NSString *displayString = @"- no contact name -";
+
     // get contact info
     NSString *firstName = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonFirstNameProperty));
     NSString *lastName  = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonLastNameProperty));
-    NSString *displayString = [NSString stringWithFormat: @"%@, %@", lastName, firstName];
+
+    if (lastName == nil)
+    {
+        if (firstName != nil)
+        {
+            displayString = firstName;
+        }
+    }
+    else if (firstName == nil)
+    {
+        if (lastName != nil)
+        {
+            displayString = lastName;
+        }
+    }
+    else
+    {
+        displayString = [NSString stringWithFormat: @"%@, %@", lastName, firstName];
+    }
 
     NSString *phoneNumber = [self phoneNumberForContact: contact];
     if (phoneNumber != nil)
@@ -199,6 +219,14 @@
 
 #pragma mark - UITableViewDelegate
 
+- (void) tableView: (UITableView*) tableView didSelectRowAtIndexPath: (NSIndexPath*) indexPath
+{
+    int row = (int) [indexPath row];
+    ABRecordRef contact = (__bridge ABRecordRef) ([_tableItems objectAtIndex: row]);
+
+    [_csDelegate contactSelected: contact];
+}
+
 
 #pragma mark - UISearchBarDelegate
 
@@ -229,7 +257,7 @@
 // Called when the search bar's text or scope has changed or when the search bar becomes first responder.
 - (void) updateSearchResultsForSearchController: (UISearchController*) searchController;
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    //NSLog(@"%s", __PRETTY_FUNCTION__);
     [self updateTableItems];
 }
 

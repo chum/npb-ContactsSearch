@@ -8,8 +8,6 @@
 
 #import "ViewController.h"
 
-#import "ContactsSearchDisplayController.h"
-
 
 @interface ViewController ()
 @end
@@ -24,6 +22,7 @@
     [super viewDidLoad];
 
     ContactsSearchDisplayController *vc = [ContactsSearchDisplayController csdc];
+    vc.csDelegate = self;
     [self addChildViewController: vc];
     vc.view.frame = self.contentView.bounds;
     [self.contentView addSubview: vc.view];
@@ -35,6 +34,16 @@
     NSLog(@"%s", __PRETTY_FUNCTION__);
 
     [super didReceiveMemoryWarning];
+}
+
+
+#pragma mark - ContactSearchDelegate
+
+- (void) contactSelected: (ABRecordRef) contact
+{
+    NSString *display = [ContactsSearchDisplayController displayStringForContact: contact];
+
+    NSLog(@"%s %@", __PRETTY_FUNCTION__, display);
 }
 
 
