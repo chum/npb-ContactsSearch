@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ContactsSearchBarViewController : UISearchController
+@interface ContactsSearchDisplayController : UIViewController
     <UISearchBarDelegate, UISearchControllerDelegate,
     UISearchDisplayDelegate, UISearchResultsUpdating,
     UITableViewDataSource, UITableViewDelegate>

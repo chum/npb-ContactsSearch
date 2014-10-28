@@ -6,23 +6,23 @@
 //  Copyright (c) 2014 No Plan B Production. All rights reserved.
 //
 
-#import "ContactsSearchBarViewController.h"
+#import "ContactsSearchDisplayController.h"
 
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
 
 
-@interface ContactsSearchBarViewController ()
+@interface ContactsSearchDisplayController ()
 @property(strong, nonatomic) NSMutableArray *tableItems;
 @end
 
 
 
-@implementation ContactsSearchBarViewController
+@implementation ContactsSearchDisplayController
 
 #pragma mark - Lifecycle
 
-- (void)viewDidLoad
+- (void) viewDidLoad
 {
     [super viewDidLoad];
 
@@ -32,7 +32,7 @@
 }
 
 
-- (void)didReceiveMemoryWarning
+- (void) didReceiveMemoryWarning
 {
     NSLog(@"%s", __PRETTY_FUNCTION__);
 
