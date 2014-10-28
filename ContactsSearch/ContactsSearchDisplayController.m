@@ -133,13 +133,13 @@
    [_tableItems removeAllObjects];
        
     int count = (int)[contacts count];
+    NSString *matchString = [self.searchbar.text lowercaseString];
     for (int index = 0 ; index < count ; ++index)
     {
         ABRecordRef contact = (__bridge ABRecordRef) ([contacts objectAtIndex: index]);
-        NSString *display = [ContactsSearchDisplayController displayStringForContact: contact];
+        NSString *display = [[ContactsSearchDisplayController displayStringForContact: contact] lowercaseString];
 
         //* FIXME: do correct filtering, as desired
-        NSString *matchString = self.searchbar.text;
         if ([display rangeOfString: matchString].location != NSNotFound)
         {
             [_tableItems addObject: (__bridge id)(contact)];
