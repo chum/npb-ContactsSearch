@@ -13,4 +13,8 @@
     UISearchDisplayDelegate, UISearchResultsUpdating,
     UITableViewDataSource, UITableViewDelegate>
 
++ (ContactsSearchDisplayController*) csdc;
+
+@property(weak, nonatomic) IBOutlet UISearchBar *searchbar;
+@property(weak, nonatomic) IBOutlet UISearchController *searchController;
 @end

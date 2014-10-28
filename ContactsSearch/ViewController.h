@@ -8,13 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+
 @interface ViewController : UIViewController
-//    <UISearchBarDelegate, UISearchControllerDelegate,
-//    UISearchDisplayDelegate, UISearchResultsUpdating,
-//    UITableViewDataSource, UITableViewDelegate>
-
-//@property(weak, nonatomic) IBOutlet UISearchBar *searchbar;
-//@property(weak, nonatomic) IBOutlet UISearchController *searchController;
-
+@property(weak, nonatomic) IBOutlet UIView *contentView;
 @end
 

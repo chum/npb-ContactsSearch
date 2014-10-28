@@ -22,6 +22,14 @@
 
 #pragma mark - Lifecycle
 
++ (ContactsSearchDisplayController*) csdc
+{
+    ContactsSearchDisplayController *result = [[ContactsSearchDisplayController alloc] initWithNibName: nil bundle: nil];
+
+    return result;
+}
+
+
 - (void) viewDidLoad
 {
     [super viewDidLoad];
