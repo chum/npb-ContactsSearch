@@ -24,6 +24,7 @@
 + (ContactsSearchDisplayController*) csdc;
 
 + (NSString*) displayStringForContact: (ABRecordRef) contact;
++ (NSString*) fullDisplayStringForContact: (ABRecordRef) contact;
 + (NSString*) phoneNumberForContact: (ABRecordRef) contact;
 + (BOOL) phoneNumberIsValid: (NSString*) phoneNumber;
 

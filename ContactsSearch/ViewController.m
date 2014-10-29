@@ -29,9 +29,15 @@
 
 - (void) contactSelected: (ABRecordRef) contact
 {
-    NSString *display = [ContactsSearchDisplayController displayStringForContact: contact];
+    NSString *info = [ContactsSearchDisplayController fullDisplayStringForContact: contact];
+    [[[UIAlertView alloc] initWithTitle: @"Contact"
+                                message: info
+                               delegate: nil
+                      cancelButtonTitle: @"Ok"
+                      otherButtonTitles: nil]
+     show];
 
-    NSLog(@"%s %@", __PRETTY_FUNCTION__, display);
+    NSLog(@"%s %@", __PRETTY_FUNCTION__, info);
 }
 
 

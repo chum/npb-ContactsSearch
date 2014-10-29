@@ -150,6 +150,31 @@
 
 #pragma mark - UITableViewDataSource
 
++ (NSString*) fullDisplayStringForContact: (ABRecordRef) contact
+{
+    // get contact info
+    NSString *firstName = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonFirstNameProperty));
+    NSString *lastName  = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonLastNameProperty));
+
+    NSString *result = [NSString stringWithFormat: @"FirstName: %@\nLastName: %@\nPhone numbers: [\n", firstName, lastName];
+
+    ABMultiValueRef phoneNumbers = ABRecordCopyValue(contact, kABPersonPhoneProperty);
+    int phoneCount = (int) ABMultiValueGetCount(phoneNumbers);
+
+    for (int index = 0 ; index < phoneCount ; ++index)
+    {
+        NSString *onePhone = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(phoneNumbers, index);
+        CFStringRef locLabel = ABMultiValueCopyLabelAtIndex(phoneNumbers, index);
+        NSString *phoneLabel =(__bridge NSString*) ABAddressBookCopyLocalizedLabel(locLabel);
+        result = [result stringByAppendingFormat: @"  {Type: %@, Number: %@}\n", phoneLabel, onePhone];
+    }
+
+    result = [result stringByAppendingString: @"]"];
+
+    return result;
+}
+
+
 + (NSString*) displayStringForContact: (ABRecordRef) contact
 {
     NSString *displayString = @"- no contact name -";
