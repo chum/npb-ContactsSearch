@@ -71,15 +71,18 @@ static NSArray *MULTIVALUE_PROPERTIES = nil;
 
 @implementation ContactRecord
 
-static const NSInteger favoriteScoreThreshhold      = 900;
+static const NSInteger favoriteScoreThreshhold      = 0;
 
 
 #pragma mark - Lifecycle
 
 + (instancetype) contactWithABRecord: (ABRecordRef) abrecord
 {
+    [ContactRecord initialize];
+
     ContactRecord *result = [self new];
     result->abContact = abrecord;
+
     [result updateScore];
 
     return result;
@@ -111,6 +114,8 @@ static const NSInteger favoriteScoreThreshhold      = 900;
 
     if (MULTIVALUE_PROPERTIES == nil)
     {
+        NSLog(@"%s [DEBUG] kABPersonPhoneProperty: %d", __PRETTY_FUNCTION__, kABPersonPhoneProperty);
+
         MULTIVALUE_PROPERTIES = @[
               // Related names and associated dates (anniversaries) are likely to indicate
               // close relationships. Also, phone numbers and addresses rank higher than emails
@@ -130,7 +135,10 @@ static const NSInteger favoriteScoreThreshhold      = 900;
 
 - (void) dealloc
 {
-    CFRelease(abContact);
+    if (abContact)
+    {
+        CFRelease(abContact);
+    }
 }
 
 
@@ -246,13 +254,10 @@ static const NSInteger favoriteScoreThreshhold      = 900;
     // (e.g. first name, last name, ...).
     for (__DBPropertyScorePair *pair in SINGLEVALUE_PROPERTIES)
     {
-        if (pair.property)
+        NSString *value = CFBridgingRelease(ABRecordCopyValue(abContact, pair.property));
+        if (value)
         {
-            NSString *value = CFBridgingRelease(ABRecordCopyValue(abContact, pair.property));
-            if (value)
-            {
-                _score += pair.score;
-            }
+            _score += pair.score;
         }
     }
 
@@ -260,14 +265,11 @@ static const NSInteger favoriteScoreThreshhold      = 900;
     // (e.g. phone numbers, email addresses, ...).
     for (__DBPropertyScorePair *pair in MULTIVALUE_PROPERTIES)
     {
-        if (pair.property)
+        ABMultiValueRef valueRef = ABRecordCopyValue(abContact, pair.property);
+        if (valueRef)
         {
-            ABMultiValueRef valueRef = ABRecordCopyValue(abContact, pair.property);
-            if (valueRef)
-            {
-                _score += ABMultiValueGetCount(valueRef) * pair.score;
-                CFRelease(valueRef);
-            }
+            _score += ABMultiValueGetCount(valueRef) * pair.score;
+            CFRelease(valueRef);
         }
     }
 

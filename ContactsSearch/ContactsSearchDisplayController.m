@@ -131,11 +131,17 @@
         ContactRecord *c1 = obj1;
         ContactRecord *c2 = obj2;
 #endif
+        NSComparisonResult scoreCompare = [@(-c1.score) compare: @(-c2.score)]; // negative to reverse the sort (highest on top)
 
-        NSString *d1 = [c1 displayString];
-        NSString *d2 = [c2 displayString];
+        if (scoreCompare == NSOrderedSame)
+        {
+            NSString *d1 = [c1 displayString];
+            NSString *d2 = [c2 displayString];
 
-        return [d1 compare: d2];
+            return [d1 compare: d2];
+        }
+
+        return scoreCompare;
     }];
 
     return result;
@@ -160,7 +166,7 @@
 
 #if USE_UNIFIED_CONTACTS   // New way
         // See: http://stackoverflow.com/questions/11351454/dealing-with-duplicate-contacts-due-to-linked-cards-in-ios-address-book-api
-        NSLog(@"%s (new way)", __PRETTY_FUNCTION__);
+        //NSLog(@"%s (new way)", __PRETTY_FUNCTION__);
 
         NSMutableSet *unifiedRecordsSet = [NSMutableSet set];
 
@@ -196,17 +202,19 @@
         for (NSSet *contactSet in unifiedRecordsSet)
         {
             [_allContacts addObject: contactSet];
-            int setCount = (int) [contactSet count];
-            if (setCount > 1)
-            {
-                NSLog(@"%s Linked contacts:", __PRETTY_FUNCTION__);
-                NSArray *tmpArray = [contactSet allObjects];
-                for (int index = 0 ; index < setCount ; ++index)
-                {
-                    ContactRecord *contact = [tmpArray objectAtIndex: index];
-                    NSLog(@"%s .. %@", __PRETTY_FUNCTION__, [contact displayString]);
-                }
-            }
+
+// Debug logging
+//            int setCount = (int) [contactSet count];
+//            if (setCount > 1)
+//            {
+//                //NSLog(@"%s Linked contacts:", __PRETTY_FUNCTION__);
+//                NSArray *tmpArray = [contactSet allObjects];
+//                for (int index = 0 ; index < setCount ; ++index)
+//                {
+//                    ContactRecord *contact = [tmpArray objectAtIndex: index];
+//                    NSLog(@"%s .. %@", __PRETTY_FUNCTION__, [contact displayString]);
+//                }
+//            }
         }
 
         NSLog(@"%s contacts: %d", __PRETTY_FUNCTION__, (int) [_allContacts count]);
@@ -280,7 +288,15 @@
     // get contact
     int row = (int) [indexPath row];
     ContactRecord *contact = [self contactInArray: _tableItems atIndex: row];
-    cell.textLabel.text = [contact displayString];
+
+//    if (contact.score == 0)
+//    {
+//        cell.textLabel.text = [contact displayString];
+//    }
+//    else
+    {
+        cell.textLabel.text = [NSString stringWithFormat: @"[%d]  %@", contact.score, [contact displayString]];
+    }
 
     return cell;
 }

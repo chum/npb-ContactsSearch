@@ -22,8 +22,6 @@
 {
     [super viewDidLoad];
 
-    [ContactRecord initialize];
-
     _csdc = [ContactsSearchDisplayController csdc];
     _csdc.csDelegate = self;
     [self addChildViewController: _csdc];
