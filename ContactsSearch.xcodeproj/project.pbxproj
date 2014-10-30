@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4D1880871A02B48500CD3F88 /* ContactRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D1880861A02B48500CD3F88 /* ContactRecord.m */; };
 		4DCC9CFC19FFFCFD00FBCE70 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DCC9CFB19FFFCFD00FBCE70 /* main.m */; };
 		4DCC9CFF19FFFCFD00FBCE70 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DCC9CFE19FFFCFD00FBCE70 /* AppDelegate.m */; };
 		4DCC9D0219FFFCFD00FBCE70 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DCC9D0119FFFCFD00FBCE70 /* ViewController.m */; };
@@ -32,6 +33,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4D1880851A02B48500CD3F88 /* ContactRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactRecord.h; sourceTree = "<group>"; };
+		4D1880861A02B48500CD3F88 /* ContactRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactRecord.m; sourceTree = "<group>"; };
 		4DCC9CF619FFFCFD00FBCE70 /* ContactsSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ContactsSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DCC9CFA19FFFCFD00FBCE70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4DCC9CFB19FFFCFD00FBCE70 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -96,6 +99,8 @@
 		4DCC9CF819FFFCFD00FBCE70 /* ContactsSearch */ = {
 			isa = PBXGroup;
 			children = (
+				4D1880851A02B48500CD3F88 /* ContactRecord.h */,
+				4D1880861A02B48500CD3F88 /* ContactRecord.m */,
 				4DCC9D2B1A000E5F00FBCE70 /* ContactsSearchDisplayController.h */,
 				4DCC9D2C1A000E5F00FBCE70 /* ContactsSearchDisplayController.m */,
 				4DCC9D2D1A000E5F00FBCE70 /* ContactsSearchDisplayController.xib */,
@@ -265,6 +270,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4DCC9D0219FFFCFD00FBCE70 /* ViewController.m in Sources */,
+				4D1880871A02B48500CD3F88 /* ContactRecord.m in Sources */,
 				4DCC9D2E1A000E5F00FBCE70 /* ContactsSearchDisplayController.m in Sources */,
 				4DCC9CFF19FFFCFD00FBCE70 /* AppDelegate.m in Sources */,
 				4DCC9CFC19FFFCFD00FBCE70 /* main.m in Sources */,

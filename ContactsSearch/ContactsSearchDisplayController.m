@@ -87,10 +87,9 @@
 {
 #if USE_UNIFIED_CONTACTS
     NSSet *contactSet = [array objectAtIndex: index];
-    ABRecordRef contact = (__bridge ABRecordRef) ([contactSet anyObject]);
+    ABRecordRef contact = [self contactFromUnifiedSet: contactSet];
 
 #else
-
     ABRecordRef contact = (__bridge ABRecordRef) [array objectAtIndex: index];
 
 #endif
@@ -99,12 +98,58 @@
 }
 
 
+#if USE_UNIFIED_CONTACTS
+- (ABRecordRef) contactFromUnifiedSet: (NSSet*) contactSet
+{
+    ABRecordRef result = (__bridge ABRecordRef) [contactSet anyObject];
+
+    return result;
+}
+
+#endif
+
+
 + (BOOL) phoneNumberIsValid: (NSString*) phoneNumber
 {
     //* FIXME: Use Sani's library routines to actually validate the phone #
     //      Current code counts any non-nil phone# as valid
 
     return ([phoneNumber length] > 0);
+}
+
+
+- (int) scoreForContact: (ABRecordRef) contact
+{
+    // Ref: http://dbader.org/blog/guessing-favorite-contacts-ios
+    int score = 0;
+
+    return score;
+}
+
+
+- (NSArray*) sortContacts: (NSArray*) contacts
+{
+    NSArray *result = [contacts sortedArrayUsingComparator: ^NSComparisonResult(id obj1, id obj2) {
+#if USE_UNIFIED_CONTACTS
+        NSSet *s1 = obj1;
+        NSSet *s2 = obj2;
+
+        ABRecordRef c1 = [self contactFromUnifiedSet: s1];
+        ABRecordRef c2 = [self contactFromUnifiedSet: s2];
+
+#else
+        ABRecordRef c1 = (__bridge ABRecordRef) obj1;
+        ABRecordRef c2 = (__bridge ABRecordRef) obj2;
+#endif
+
+        NSString *d1 = [ContactsSearchDisplayController displayStringForContact: c1];
+        NSString *d2 = [ContactsSearchDisplayController displayStringForContact: c2];
+
+
+        return [d1 compare: d2];
+    }];
+
+    return result;
 }
 
 
@@ -177,11 +222,11 @@
 
         NSLog(@"%s [DEBUG] %ld contacts", __PRETTY_FUNCTION__, (unsigned long)[myContacts count]);
 
-        //* FIXME: If we want to do any sorting, do it here.
-
         [_allContacts addObjectsFromArray: myContacts];
 
 #endif
+
+        _allContacts = [[self sortContacts: _allContacts] mutableCopy];
     }
     else
     {
@@ -212,7 +257,6 @@
         ABRecordRef contact = [self contactInArray: contacts atIndex: index];
         NSString *display = [[ContactsSearchDisplayController displayStringForContact: contact] lowercaseString];
 
-        //* FIXME: do correct filtering, as desired
         if ([display rangeOfString: matchString].location != NSNotFound)
         {
             [_tableItems addObject: contactSet];
