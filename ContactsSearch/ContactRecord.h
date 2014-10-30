@@ -14,7 +14,12 @@
 @interface ContactRecord : NSObject
 
 + (instancetype) contactWithABRecord: (ABRecordRef) abrecord;
++ (void) initialize;
 
-@property(readwrite, nonatomic) ABRecordRef contact;
+- (ABRecordRef) contact;
+- (NSString*) displayString;
+- (NSString*) longDisplayString;
+- (NSString*) phoneNumber;
+
 @property(readonly, nonatomic) int score;
 @end

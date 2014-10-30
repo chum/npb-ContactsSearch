@@ -22,6 +22,8 @@
 {
     [super viewDidLoad];
 
+    [ContactRecord initialize];
+
     _csdc = [ContactsSearchDisplayController csdc];
     _csdc.csDelegate = self;
     [self addChildViewController: _csdc];
@@ -32,9 +34,9 @@
 
 #pragma mark - ContactSearchDelegate
 
-- (void) contactSelected: (ABRecordRef) contact
+- (void) contactSelected: (ContactRecord*) contact
 {
-    NSString *info = [ContactsSearchDisplayController fullDisplayStringForContact: contact];
+    NSString *info = [contact longDisplayString];
     [[[UIAlertView alloc] initWithTitle: @"Contact"
                                 message: info
                                delegate: nil

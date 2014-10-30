@@ -9,7 +9,6 @@
 #import "ContactsSearchDisplayController.h"
 
 
-
 @interface ContactsSearchDisplayController ()
 @property(strong, nonatomic) NSMutableArray *allContacts;
 @property(strong, nonatomic) NSString *previousSearchText;
@@ -83,14 +82,14 @@
 }
 
 
-- (ABRecordRef) contactInArray: (NSArray*) array atIndex: (int) index
+- (ContactRecord*) contactInArray: (NSArray*) array atIndex: (int) index
 {
 #if USE_UNIFIED_CONTACTS
     NSSet *contactSet = [array objectAtIndex: index];
-    ABRecordRef contact = [self contactFromUnifiedSet: contactSet];
+    ContactRecord *contact = [self contactFromUnifiedSet: contactSet];
 
 #else
-    ABRecordRef contact = (__bridge ABRecordRef) [array objectAtIndex: index];
+    ContactRecord *contact = [array objectAtIndex: index];
 
 #endif
 
@@ -99,9 +98,9 @@
 
 
 #if USE_UNIFIED_CONTACTS
-- (ABRecordRef) contactFromUnifiedSet: (NSSet*) contactSet
+- (ContactRecord*) contactFromUnifiedSet: (NSSet*) contactSet
 {
-    ABRecordRef result = (__bridge ABRecordRef) [contactSet anyObject];
+    ContactRecord *result = [contactSet anyObject];
 
     return result;
 }
@@ -118,15 +117,6 @@
 }
 
 
-- (int) scoreForContact: (ABRecordRef) contact
-{
-    // Ref: http://dbader.org/blog/guessing-favorite-contacts-ios
-    int score = 0;
-
-    return score;
-}
-
-
 - (NSArray*) sortContacts: (NSArray*) contacts
 {
     NSArray *result = [contacts sortedArrayUsingComparator: ^NSComparisonResult(id obj1, id obj2) {
@@ -134,17 +124,16 @@
         NSSet *s1 = obj1;
         NSSet *s2 = obj2;
 
-        ABRecordRef c1 = [self contactFromUnifiedSet: s1];
-        ABRecordRef c2 = [self contactFromUnifiedSet: s2];
+        ContactRecord *c1 = [self contactFromUnifiedSet: s1];
+        ContactRecord *c2 = [self contactFromUnifiedSet: s2];
 
 #else
-        ABRecordRef c1 = (__bridge ABRecordRef) obj1;
-        ABRecordRef c2 = (__bridge ABRecordRef) obj2;
+        ContactRecord *c1 = obj1;
+        ContactRecord *c2 = obj2;
 #endif
 
-        NSString *d1 = [ContactsSearchDisplayController displayStringForContact: c1];
-        NSString *d2 = [ContactsSearchDisplayController displayStringForContact: c2];
-
+        NSString *d1 = [c1 displayString];
+        NSString *d2 = [c2 displayString];
 
         return [d1 compare: d2];
     }];
@@ -180,20 +169,25 @@
         int recordCount = (int) CFArrayGetCount(records);
         for (CFIndex index = 0 ; index < recordCount ; ++index)
         {
-            ABRecordRef record = CFArrayGetValueAtIndex(records, index);
+            ABRecordRef abRecord = CFArrayGetValueAtIndex(records, index);
+            ContactRecord *contactRecord = [ContactRecord contactWithABRecord: abRecord];
 
             // For each contact, create a set with all of the linked contacts
             NSMutableSet *contactSet = [NSMutableSet set];
-            [contactSet addObject: (__bridge id) record];
+            [contactSet addObject: contactRecord];
 
-            NSArray *linkedRecordsArray = (__bridge NSArray*) ABPersonCopyArrayOfAllLinkedPeople(record);
-            [contactSet addObjectsFromArray: linkedRecordsArray];
+            NSArray *linkedRecordsArray = (__bridge NSArray*) ABPersonCopyArrayOfAllLinkedPeople(abRecord);
+            int linkCount = (int) [linkedRecordsArray count];
+            for (int link = 0 ; link < linkCount ; ++link)
+            {
+                ABRecordRef abLink = (__bridge ABRecordRef) [linkedRecordsArray objectAtIndex: link];
+                ContactRecord *contactLink = [ContactRecord contactWithABRecord: abLink];
+                [contactSet addObject: contactLink];
+            }
 
             // Add this set of contacts to our master set (weeding-out duplicates)
             NSSet *unifiedRecord = [[NSSet alloc] initWithSet: contactSet];
             [unifiedRecordsSet addObject: unifiedRecord];
-
-            CFRelease(record);
         }
         
         CFRelease(records);
@@ -209,8 +203,8 @@
                 NSArray *tmpArray = [contactSet allObjects];
                 for (int index = 0 ; index < setCount ; ++index)
                 {
-                    ABRecordRef oneContact = (__bridge ABRecordRef)[tmpArray objectAtIndex: index];
-                    NSLog(@"%s .. %@", __PRETTY_FUNCTION__, [ContactsSearchDisplayController displayStringForContact: oneContact]);
+                    ContactRecord *contact = [tmpArray objectAtIndex: index];
+                    NSLog(@"%s .. %@", __PRETTY_FUNCTION__, [contact displayString]);
                 }
             }
         }
@@ -254,8 +248,8 @@
     for (int index = 0 ; index < count ; ++index)
     {
         NSSet *contactSet = [contacts objectAtIndex: index];
-        ABRecordRef contact = [self contactInArray: contacts atIndex: index];
-        NSString *display = [[ContactsSearchDisplayController displayStringForContact: contact] lowercaseString];
+        ContactRecord *contact = [self contactInArray: contacts atIndex: index];
+        NSString *display = [[contact displayString] lowercaseString];
 
         if ([display rangeOfString: matchString].location != NSNotFound)
         {
@@ -266,82 +260,6 @@
 
 
 #pragma mark - UITableViewDataSource
-
-+ (NSString*) fullDisplayStringForContact: (ABRecordRef) contact
-{
-    // get contact info
-    NSString *firstName = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonFirstNameProperty));
-    NSString *lastName  = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonLastNameProperty));
-
-    NSString *result = [NSString stringWithFormat: @"FirstName: %@\nLastName: %@\nPhone numbers: [\n", firstName, lastName];
-
-    ABMultiValueRef phoneNumbers = ABRecordCopyValue(contact, kABPersonPhoneProperty);
-    int phoneCount = (int) ABMultiValueGetCount(phoneNumbers);
-
-    for (int index = 0 ; index < phoneCount ; ++index)
-    {
-        NSString *onePhone = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(phoneNumbers, index);
-        CFStringRef locLabel = ABMultiValueCopyLabelAtIndex(phoneNumbers, index);
-        NSString *phoneLabel =(__bridge NSString*) ABAddressBookCopyLocalizedLabel(locLabel);
-        result = [result stringByAppendingFormat: @"  {Type: %@, Number: %@}\n", phoneLabel, onePhone];
-    }
-
-    result = [result stringByAppendingString: @"]"];
-
-    return result;
-}
-
-
-+ (NSString*) displayStringForContact: (ABRecordRef) contact
-{
-    NSString *displayString = @"- no contact name -";
-
-    // get contact info
-    NSString *firstName = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonFirstNameProperty));
-    NSString *lastName  = (__bridge NSString*) (ABRecordCopyValue(contact, kABPersonLastNameProperty));
-
-    if (lastName == nil)
-    {
-        if (firstName != nil)
-        {
-            displayString = firstName;
-        }
-    }
-    else if (firstName == nil)
-    {
-        if (lastName != nil)
-        {
-            displayString = lastName;
-        }
-    }
-    else
-    {
-        displayString = [NSString stringWithFormat: @"%@, %@", lastName, firstName];
-    }
-
-    NSString *phoneNumber = [self phoneNumberForContact: contact];
-    if (phoneNumber != nil)
-    {
-        displayString = [displayString stringByAppendingFormat: @" : %@", phoneNumber];
-    }
-
-    return displayString;
-}
-
-
-+ (NSString*) phoneNumberForContact: (ABRecordRef) contact
-{
-    NSString *result = nil;
-    ABMultiValueRef phoneNumbers = ABRecordCopyValue(contact, kABPersonPhoneProperty);
-
-    if (ABMultiValueGetCount(phoneNumbers) > 0)
-    {
-        result = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(phoneNumbers, 0);
-    }
-
-    return result;
-}
-
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 {
@@ -361,8 +279,8 @@
 
     // get contact
     int row = (int) [indexPath row];
-    ABRecordRef contact = [self contactInArray: _tableItems atIndex: row];
-    cell.textLabel.text = [ContactsSearchDisplayController displayStringForContact: contact];
+    ContactRecord *contact = [self contactInArray: _tableItems atIndex: row];
+    cell.textLabel.text = [contact displayString];
 
     return cell;
 }
@@ -373,7 +291,7 @@
 - (void) tableView: (UITableView*) tableView didSelectRowAtIndexPath: (NSIndexPath*) indexPath
 {
     int row = (int) [indexPath row];
-    ABRecordRef contact = [self contactInArray: _tableItems atIndex: row];
+    ContactRecord *contact = [self contactInArray: _tableItems atIndex: row];
 
     [_csDelegate contactSelected: contact];
 }
@@ -433,14 +351,14 @@
         int contactCount = (int) [contacts count];
         for (int index = 0 ; index < contactCount ; ++index)
         {
-            ABRecordRef oneContact = (__bridge ABRecordRef) [contacts objectAtIndex: index];
+            ContactRecord *oneContact = [contacts objectAtIndex: index];
 
 #else
-            ABRecordRef oneContact = (__bridge ABRecordRef) [_allContacts objectAtIndex: ii];
+            ContactRecord *oneContact = [_allContacts objectAtIndex: ii];
 
 #endif
             // Look for Jill
-            NSString *displayString = [ContactsSearchDisplayController displayStringForContact: oneContact];
+            NSString *displayString = [oneContact displayString];
             NSRange found = [[displayString lowercaseString] rangeOfString: @"jill"];
             if (found.location != NSNotFound)
             {
@@ -450,13 +368,13 @@
                 NSLog(@"Item #%d contains %d contacts (> 1 indicates 'linked' contacts", ii, contactCount);
                 for (int ind2 = 0 ; ind2 < contactCount ; ++ind2)
                 {
-                    ABRecordRef jill = (__bridge ABRecordRef) [contacts objectAtIndex: index];
-                    NSString *fullString = [ContactsSearchDisplayController fullDisplayStringForContact: jill];
+                    ContactRecord *jill = [contacts objectAtIndex: index];
+                    NSString *fullString = [jill longDisplayString];
                     NSLog (@" .. Item %d-%d is contact:\n%@", ii, ind2, fullString);
                     NSLog (@"");
                 }
 #else
-                NSString *fullString = [ContactsSearchDisplayController fullDisplayStringForContact: oneContact];
+                NSString *fullString = [oneContact longDisplayString];
                 NSLog(@"Item #%d is:\n%@", ii, fullString);
 
 #endif

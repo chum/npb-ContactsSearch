@@ -10,6 +10,10 @@
 
 
 @interface ContactRecord()
+{
+    ABRecordRef abContact;
+}
+
 @property(readwrite, nonatomic) int score;
 @end
 
@@ -42,20 +46,22 @@ static NSArray *MULTIVALUE_PROPERTIES = nil;
 
 @implementation __DBPropertyScorePair
 
-- (instancetype) initWithProperty:(ABPropertyID)property score:(NSInteger)score {
+- (instancetype) initWithProperty:(ABPropertyID)property score:(NSInteger)score
+{
     self = [super init];
-    if (!self) {
-        return nil;
+    if (self)
+    {
+        _property = property;
+        _score = score;
     }
-
-    _property = property;
-    _score = score;
 
     return self;
 }
 
-+ (instancetype) pairWithProperty:(ABPropertyID)property score:(NSInteger)score {
-    return [[__DBPropertyScorePair alloc] initWithProperty:property score:score];
+
++ (instancetype) pairWithProperty:(ABPropertyID)property score:(NSInteger)score
+{
+    return [[__DBPropertyScorePair alloc] initWithProperty: property score: score];
 }
 
 @end
@@ -65,18 +71,23 @@ static NSArray *MULTIVALUE_PROPERTIES = nil;
 
 @implementation ContactRecord
 
-static const NSInteger favoriteScoreThreshhold      = 300;
+static const NSInteger favoriteScoreThreshhold      = 900;
+
+
+#pragma mark - Lifecycle
 
 + (instancetype) contactWithABRecord: (ABRecordRef) abrecord
 {
     ContactRecord *result = [self new];
-    result.contact = abrecord;
+    result->abContact = abrecord;
+    [result updateScore];
 
     return result;
 }
 
 
-+ (void) initialize {
++ (void) initialize
+{
     if (SINGLEVALUE_PROPERTIES == nil)
     {
         SINGLEVALUE_PROPERTIES = @[
@@ -117,21 +128,110 @@ static const NSInteger favoriteScoreThreshhold      = 300;
 }
 
 
+- (void) dealloc
+{
+    CFRelease(abContact);
+}
+
+
+#pragma mark -
+
+- (ABRecordRef) contact
+{
+    return abContact;
+}
+
+
+- (NSString*) displayString
+{
+    NSString *displayString = @"- no contact name -";
+
+    // get contact info
+    NSString *firstName = (__bridge NSString*) (ABRecordCopyValue(abContact, kABPersonFirstNameProperty));
+    NSString *lastName  = (__bridge NSString*) (ABRecordCopyValue(abContact, kABPersonLastNameProperty));
+
+    if (lastName == nil)
+    {
+        if (firstName != nil)
+        {
+            displayString = firstName;
+        }
+    }
+    else if (firstName == nil)
+    {
+        if (lastName != nil)
+        {
+            displayString = lastName;
+        }
+    }
+    else
+    {
+        displayString = [NSString stringWithFormat: @"%@, %@", lastName, firstName];
+    }
+
+    NSString *phoneNumber = [self phoneNumber];
+    if (phoneNumber != nil)
+    {
+        displayString = [displayString stringByAppendingFormat: @" : %@", phoneNumber];
+    }
+
+    return displayString;
+}
+
+
+- (NSString*) longDisplayString
+{
+    // get contact info
+    NSString *firstName = (__bridge NSString*) (ABRecordCopyValue(abContact, kABPersonFirstNameProperty));
+    NSString *lastName  = (__bridge NSString*) (ABRecordCopyValue(abContact, kABPersonLastNameProperty));
+
+    NSString *result = [NSString stringWithFormat: @"FirstName: %@\nLastName: %@\nPhone numbers: [\n", firstName, lastName];
+
+    ABMultiValueRef phoneNumbers = ABRecordCopyValue(abContact, kABPersonPhoneProperty);
+    int phoneCount = (int) ABMultiValueGetCount(phoneNumbers);
+
+    for (int index = 0 ; index < phoneCount ; ++index)
+    {
+        NSString *onePhone = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(phoneNumbers, index);
+        CFStringRef locLabel = ABMultiValueCopyLabelAtIndex(phoneNumbers, index);
+        NSString *phoneLabel =(__bridge NSString*) ABAddressBookCopyLocalizedLabel(locLabel);
+        result = [result stringByAppendingFormat: @"  {Type: %@, Number: %@}\n", phoneLabel, onePhone];
+    }
+
+    result = [result stringByAppendingString: @"]"];
+
+    return result;
+}
+
+
+- (NSString*) phoneNumber
+{
+    NSString *result = nil;
+    ABMultiValueRef phoneNumbers = ABRecordCopyValue(abContact, kABPersonPhoneProperty);
+
+    if (ABMultiValueGetCount(phoneNumbers) > 0)
+    {
+        result = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(phoneNumbers, 0);
+    }
+
+    return result;
+}
+
+
 - (void) setContact: (ABRecordRef) contact
 {
-    _contact = contact;
-
-    [self updateScore];
 }
 
 
 - (void) updateScore
 {
+    // Ref: http://dbader.org/blog/guessing-favorite-contacts-ios
+
     _score = 0;
 
     // Give a score penalty to contacts that belong to an organization
     // instead of a person.
-    CFNumberRef contactKind = ABRecordCopyValue(_contact, kABPersonKindProperty);
+    CFNumberRef contactKind = ABRecordCopyValue(abContact, kABPersonKindProperty);
     if (contactKind && contactKind != kABPersonKindPerson)
     {
         _score -= NON_PERSON_PENALTY;
@@ -146,10 +246,13 @@ static const NSInteger favoriteScoreThreshhold      = 300;
     // (e.g. first name, last name, ...).
     for (__DBPropertyScorePair *pair in SINGLEVALUE_PROPERTIES)
     {
-        NSString *value = CFBridgingRelease(ABRecordCopyValue(_contact, pair.property));
-        if (value)
+        if (pair.property)
         {
-            _score += pair.score;
+            NSString *value = CFBridgingRelease(ABRecordCopyValue(abContact, pair.property));
+            if (value)
+            {
+                _score += pair.score;
+            }
         }
     }
 
@@ -157,18 +260,26 @@ static const NSInteger favoriteScoreThreshhold      = 300;
     // (e.g. phone numbers, email addresses, ...).
     for (__DBPropertyScorePair *pair in MULTIVALUE_PROPERTIES)
     {
-        ABMultiValueRef valueRef = ABRecordCopyValue(_contact, pair.property);
-        if (valueRef)
+        if (pair.property)
         {
-            _score += ABMultiValueGetCount(valueRef) * pair.score;
-            CFRelease(valueRef);
+            ABMultiValueRef valueRef = ABRecordCopyValue(abContact, pair.property);
+            if (valueRef)
+            {
+                _score += ABMultiValueGetCount(valueRef) * pair.score;
+                CFRelease(valueRef);
+            }
         }
     }
 
     // Give score if a contact has an associated image.
-    if (ABPersonHasImageData(_contact))
+    if (ABPersonHasImageData(abContact))
     {
         _score += IMAGE_SCORE;
+    }
+
+    if (_score < favoriteScoreThreshhold)
+    {
+        _score = 0;
     }
 }
 

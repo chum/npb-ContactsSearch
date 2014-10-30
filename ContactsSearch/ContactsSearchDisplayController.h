@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 
 #import <AddressBook/AddressBook.h>
+#import "ContactRecord.h"
 
 
 @protocol ContactSearchDelegate <NSObject>
-- (void) contactSelected: (ABRecordRef) contact;
+- (void) contactSelected: (ContactRecord*) contact;
 @end
 
 
@@ -23,9 +24,6 @@
 
 + (ContactsSearchDisplayController*) csdc;
 
-+ (NSString*) displayStringForContact: (ABRecordRef) contact;
-+ (NSString*) fullDisplayStringForContact: (ABRecordRef) contact;
-+ (NSString*) phoneNumberForContact: (ABRecordRef) contact;
 + (BOOL) phoneNumberIsValid: (NSString*) phoneNumber;
 
 - (void) debugJillTest;
