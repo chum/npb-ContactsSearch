@@ -120,6 +120,8 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
               [__DBPropertyScorePair pairWithProperty: kABPersonRelatedNamesProperty   score: 200],
               [__DBPropertyScorePair pairWithProperty: kABPersonDateProperty           score: 250],
               [__DBPropertyScorePair pairWithProperty: kABPersonAddressProperty        score:  50],
+              [__DBPropertyScorePair pairWithProperty: kABPersonPhoneProperty          score:  40],
+              [__DBPropertyScorePair pairWithProperty: kABPersonEmailProperty          score:  15],
               ];
     }
 
@@ -129,8 +131,6 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
 
         MULTIBONUS_PROPERTIES = @[
               // Bonus items for which you get count^2 points, up to a maximum
-              [__DBPropertyScorePair pairWithProperty: kABPersonPhoneProperty          score:  40],
-              [__DBPropertyScorePair pairWithProperty: kABPersonEmailProperty          score:  15],
               [__DBPropertyScorePair pairWithProperty: kABPersonURLProperty            score:  25],
               [__DBPropertyScorePair pairWithProperty: kABPersonSocialProfileProperty  score:  45],
               [__DBPropertyScorePair pairWithProperty: kABPersonInstantMessageProperty score:  45]
