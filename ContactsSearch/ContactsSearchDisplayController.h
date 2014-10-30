@@ -28,6 +28,8 @@
 + (NSString*) phoneNumberForContact: (ABRecordRef) contact;
 + (BOOL) phoneNumberIsValid: (NSString*) phoneNumber;
 
+- (void) debugJillTest;
+
 @property(weak, nonatomic) id<ContactSearchDelegate> csDelegate;
 
 @property(weak, nonatomic) IBOutlet UISearchBar *searchbar;

@@ -9,6 +9,11 @@
 #import "ViewController.h"
 
 
+@interface ViewController ()
+@property(strong, nonatomic) ContactsSearchDisplayController *csdc;
+@end
+
+
 @implementation ViewController
 
 #pragma mark - Lifecycle
@@ -17,11 +22,11 @@
 {
     [super viewDidLoad];
 
-    ContactsSearchDisplayController *vc = [ContactsSearchDisplayController csdc];
-    vc.csDelegate = self;
-    [self addChildViewController: vc];
-    vc.view.frame = self.contentView.bounds;
-    [self.contentView addSubview: vc.view];
+    _csdc = [ContactsSearchDisplayController csdc];
+    _csdc.csDelegate = self;
+    [self addChildViewController: _csdc];
+    _csdc.view.frame = self.contentView.bounds;
+    [self.contentView addSubview: _csdc.view];
 }
 
 
@@ -38,6 +43,14 @@
      show];
 
     NSLog(@"%s %@", __PRETTY_FUNCTION__, info);
+}
+
+
+#pragma mark - Actions
+
+- (IBAction) debugJillTest: (id) sender
+{
+    [_csdc debugJillTest];
 }
 
 

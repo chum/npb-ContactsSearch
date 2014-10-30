@@ -20,6 +20,9 @@
 
 @implementation ContactsSearchDisplayController
 
+#define USE_UNIFIED_CONTACTS            1
+
+
 #pragma mark - Lifecycle
 
 + (ContactsSearchDisplayController*) csdc
@@ -80,6 +83,22 @@
 }
 
 
+- (ABRecordRef) contactInArray: (NSArray*) array atIndex: (int) index
+{
+#if USE_UNIFIED_CONTACTS
+    NSSet *contactSet = [array objectAtIndex: index];
+    ABRecordRef contact = (__bridge ABRecordRef) ([contactSet anyObject]);
+
+#else
+
+    ABRecordRef contact = (__bridge ABRecordRef) [array objectAtIndex: index];
+
+#endif
+
+    return contact;
+}
+
+
 + (BOOL) phoneNumberIsValid: (NSString*) phoneNumber
 {
     //* FIXME: Use Sani's library routines to actually validate the phone #
@@ -104,6 +123,56 @@
 
     if (accessGranted)
     {
+
+#if USE_UNIFIED_CONTACTS   // New way
+        // See: http://stackoverflow.com/questions/11351454/dealing-with-duplicate-contacts-due-to-linked-cards-in-ios-address-book-api
+        NSLog(@"%s (new way)", __PRETTY_FUNCTION__);
+
+        NSMutableSet *unifiedRecordsSet = [NSMutableSet set];
+
+        // Iterate all ABRecords
+        CFArrayRef records = ABAddressBookCopyArrayOfAllPeople(addressBook);
+        int recordCount = (int) CFArrayGetCount(records);
+        for (CFIndex index = 0 ; index < recordCount ; ++index)
+        {
+            ABRecordRef record = CFArrayGetValueAtIndex(records, index);
+
+            // For each contact, create a set with all of the linked contacts
+            NSMutableSet *contactSet = [NSMutableSet set];
+            [contactSet addObject: (__bridge id) record];
+
+            NSArray *linkedRecordsArray = (__bridge NSArray*) ABPersonCopyArrayOfAllLinkedPeople(record);
+            [contactSet addObjectsFromArray: linkedRecordsArray];
+
+            // Add this set of contacts to our master set (weeding-out duplicates)
+            NSSet *unifiedRecord = [[NSSet alloc] initWithSet: contactSet];
+            [unifiedRecordsSet addObject: unifiedRecord];
+
+            CFRelease(record);
+        }
+        
+        CFRelease(records);
+        CFRelease(addressBook);
+
+        for (NSSet *contactSet in unifiedRecordsSet)
+        {
+            [_allContacts addObject: contactSet];
+            int setCount = (int) [contactSet count];
+            if (setCount > 1)
+            {
+                NSLog(@"%s Linked contacts:", __PRETTY_FUNCTION__);
+                NSArray *tmpArray = [contactSet allObjects];
+                for (int index = 0 ; index < setCount ; ++index)
+                {
+                    ABRecordRef oneContact = (__bridge ABRecordRef)[tmpArray objectAtIndex: index];
+                    NSLog(@"%s .. %@", __PRETTY_FUNCTION__, [ContactsSearchDisplayController displayStringForContact: oneContact]);
+                }
+            }
+        }
+
+        NSLog(@"%s contacts: %d", __PRETTY_FUNCTION__, (int) [_allContacts count]);
+    
+#else   // Old way
         NSArray *myContacts = (__bridge NSArray*) ABAddressBookCopyArrayOfAllPeople (addressBook);
 
         NSLog(@"%s [DEBUG] %ld contacts", __PRETTY_FUNCTION__, (unsigned long)[myContacts count]);
@@ -111,6 +180,8 @@
         //* FIXME: If we want to do any sorting, do it here.
 
         [_allContacts addObjectsFromArray: myContacts];
+
+#endif
     }
     else
     {
@@ -126,9 +197,10 @@
 
 - (void) updateTableItems
 {
-    NSArray *contacts = ([self.searchbar.text hasPrefix: _previousSearchText])
-                        ? [_tableItems copy]
-                        : [_allContacts copy];
+    BOOL keepGoing = ([self.searchbar.text hasPrefix: _previousSearchText]);
+    NSArray *contacts = (keepGoing
+                         ? [_tableItems copy]
+                         : [_allContacts copy] );
 
    [_tableItems removeAllObjects];
        
@@ -136,13 +208,14 @@
     NSString *matchString = [self.searchbar.text lowercaseString];
     for (int index = 0 ; index < count ; ++index)
     {
-        ABRecordRef contact = (__bridge ABRecordRef) ([contacts objectAtIndex: index]);
+        NSSet *contactSet = [contacts objectAtIndex: index];
+        ABRecordRef contact = [self contactInArray: contacts atIndex: index];
         NSString *display = [[ContactsSearchDisplayController displayStringForContact: contact] lowercaseString];
 
         //* FIXME: do correct filtering, as desired
         if ([display rangeOfString: matchString].location != NSNotFound)
         {
-            [_tableItems addObject: (__bridge id)(contact)];
+            [_tableItems addObject: contactSet];
         }
     }
 }
@@ -244,7 +317,7 @@
 
     // get contact
     int row = (int) [indexPath row];
-    ABRecordRef contact = (__bridge ABRecordRef) ([_tableItems objectAtIndex: row]);
+    ABRecordRef contact = [self contactInArray: _tableItems atIndex: row];
     cell.textLabel.text = [ContactsSearchDisplayController displayStringForContact: contact];
 
     return cell;
@@ -256,7 +329,7 @@
 - (void) tableView: (UITableView*) tableView didSelectRowAtIndexPath: (NSIndexPath*) indexPath
 {
     int row = (int) [indexPath row];
-    ABRecordRef contact = (__bridge ABRecordRef) ([_tableItems objectAtIndex: row]);
+    ABRecordRef contact = [self contactInArray: _tableItems atIndex: row];
 
     [_csDelegate contactSelected: contact];
 }
@@ -294,5 +367,64 @@
     //NSLog(@"%s", __PRETTY_FUNCTION__);
     [self updateTableItems];
 }
+
+
+#pragma mark - DEBUG
+
+- (void) debugJillTest
+{
+    NSLog(@"%s ====================================================", __PRETTY_FUNCTION__);
+
+    int allContactsCount = (int) [_allContacts count];
+    NSLog(@"There are %d entries in your contacts list.", allContactsCount);
+
+    // check all contact-sets
+    for (int ii = 0 ; ii < allContactsCount ; ++ii)
+    {
+#if USE_UNIFIED_CONTACTS
+        NSSet *oneContactSet = [_allContacts objectAtIndex: ii];
+
+        // check each contact within a set
+        NSArray *contacts = [oneContactSet allObjects];
+        int contactCount = (int) [contacts count];
+        for (int index = 0 ; index < contactCount ; ++index)
+        {
+            ABRecordRef oneContact = (__bridge ABRecordRef) [contacts objectAtIndex: index];
+
+#else
+            ABRecordRef oneContact = (__bridge ABRecordRef) [_allContacts objectAtIndex: ii];
+
+#endif
+            // Look for Jill
+            NSString *displayString = [ContactsSearchDisplayController displayStringForContact: oneContact];
+            NSRange found = [[displayString lowercaseString] rangeOfString: @"jill"];
+            if (found.location != NSNotFound)
+            {
+
+#if USE_UNIFIED_CONTACTS
+                // We found Jill!
+                NSLog(@"Item #%d contains %d contacts (> 1 indicates 'linked' contacts", ii, contactCount);
+                for (int ind2 = 0 ; ind2 < contactCount ; ++ind2)
+                {
+                    ABRecordRef jill = (__bridge ABRecordRef) [contacts objectAtIndex: index];
+                    NSString *fullString = [ContactsSearchDisplayController fullDisplayStringForContact: jill];
+                    NSLog (@" .. Item %d-%d is contact:\n%@", ii, ind2, fullString);
+                    NSLog (@"");
+                }
+#else
+                NSString *fullString = [ContactsSearchDisplayController fullDisplayStringForContact: oneContact];
+                NSLog(@"Item #%d is:\n%@", ii, fullString);
+
+#endif
+                NSLog(@"==========\n");
+            }
+#if USE_UNIFIED_CONTACTS
+        }
+#endif
+    }
+
+    NSLog(@"%s .. end.\n\n\n", __PRETTY_FUNCTION__);
+}
+
 
 @end
