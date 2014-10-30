@@ -52,6 +52,7 @@
     [super viewDidLoad];
 
     [self updateContacts];
+    [self updateTableItems];
 }
 
 
@@ -244,7 +245,9 @@
 
 - (void) updateTableItems
 {
-    BOOL keepGoing = ([self.searchbar.text hasPrefix: _previousSearchText]);
+    BOOL keepGoing =   (_previousSearchText.length > 0)
+                    && ([self.searchbar.text hasPrefix: _previousSearchText]);
+
     NSArray *contacts = (keepGoing
                          ? [_tableItems copy]
                          : [_allContacts copy] );
@@ -259,7 +262,8 @@
         ContactRecord *contact = [self contactInArray: contacts atIndex: index];
         NSString *display = [[contact displayString] lowercaseString];
 
-        if ([display rangeOfString: matchString].location != NSNotFound)
+        if (([matchString length] == 0)
+        ||  ([display rangeOfString: matchString].location != NSNotFound) )
         {
             [_tableItems addObject: contactSet];
         }
