@@ -28,6 +28,7 @@ static NSInteger const NON_PERSON_PENALTY = 100;
 // Single and multivalue properties are treated differently.
 static NSArray *SINGLEVALUE_PROPERTIES = nil;
 static NSArray *MULTIVALUE_PROPERTIES = nil;
+static NSArray *MULTIBONUS_PROPERTIES = nil;
 
 /**
  * A simple value object that stores an adress book contact property (an ABPropertyID)
@@ -112,16 +113,23 @@ static NSArray *MULTIVALUE_PROPERTIES = nil;
 
     if (MULTIVALUE_PROPERTIES == nil)
     {
-        NSLog(@"%s [DEBUG] kABPersonPhoneProperty: %d", __PRETTY_FUNCTION__, kABPersonPhoneProperty);
-
         MULTIVALUE_PROPERTIES = @[
               // Related names and associated dates (anniversaries) are likely to indicate
               // close relationships. Also, phone numbers and addresses rank higher than emails
               // and IM profiles.
               [__DBPropertyScorePair pairWithProperty: kABPersonRelatedNamesProperty   score: 200],
               [__DBPropertyScorePair pairWithProperty: kABPersonDateProperty           score: 250],
-              [__DBPropertyScorePair pairWithProperty: kABPersonPhoneProperty          score:  40],
               [__DBPropertyScorePair pairWithProperty: kABPersonAddressProperty        score:  50],
+              ];
+    }
+
+    if (MULTIBONUS_PROPERTIES == nil)
+    {
+        //NSLog(@"%s [DEBUG] kABPersonPhoneProperty: %d", __PRETTY_FUNCTION__, kABPersonPhoneProperty);
+
+        MULTIBONUS_PROPERTIES = @[
+              // Bonus items for which you get count^2 points, up to a maximum
+              [__DBPropertyScorePair pairWithProperty: kABPersonPhoneProperty          score:  40],
               [__DBPropertyScorePair pairWithProperty: kABPersonEmailProperty          score:  15],
               [__DBPropertyScorePair pairWithProperty: kABPersonURLProperty            score:  25],
               [__DBPropertyScorePair pairWithProperty: kABPersonSocialProfileProperty  score:  45],
@@ -160,7 +168,7 @@ static NSArray *MULTIVALUE_PROPERTIES = nil;
     {
         if (firstName == nil)
         {
-            NSLog(@"%s === Warning ===  Odd contact:\n%@", __PRETTY_FUNCTION__, [self longDisplayString]);
+            //NSLog(@"%s === Warning ===  Odd contact:\n%@", __PRETTY_FUNCTION__, [self longDisplayString]);
         }
         else
         {
@@ -237,7 +245,8 @@ static NSArray *MULTIVALUE_PROPERTIES = nil;
 {
     // Ref: http://dbader.org/blog/guessing-favorite-contacts-ios
 
-    const NSInteger favoriteScoreThreshhold      = 0;
+    const NSInteger favoriteScoreThreshhold     = 0;
+    const NSInteger maxMultiValue               = 3;                            // give bonus for more, but not more than this many
 
     _score = 0;
 
@@ -277,13 +286,30 @@ static NSArray *MULTIVALUE_PROPERTIES = nil;
     }
 
     // Give score for all non-empty multivalue properties
-    // (e.g. phone numbers, email addresses, ...).
     for (__DBPropertyScorePair *pair in MULTIVALUE_PROPERTIES)
     {
         ABMultiValueRef valueRef = ABRecordCopyValue(abContact, pair.property);
         if (valueRef)
         {
-            _score += ABMultiValueGetCount(valueRef) * pair.score;
+            CFIndex count = ABMultiValueGetCount(valueRef);
+            _score += count * pair.score;
+            CFRelease(valueRef);
+        }
+    }
+
+    // Give bonus points for multiples of really-good stuff (of to a max)
+    for (__DBPropertyScorePair *pair in MULTIBONUS_PROPERTIES)
+    {
+        ABMultiValueRef valueRef = ABRecordCopyValue(abContact, pair.property);
+        if (valueRef)
+        {
+            CFIndex count = ABMultiValueGetCount(valueRef);
+            if (count > maxMultiValue)
+            {
+                count = maxMultiValue;
+            }
+
+            _score += count * count * pair.score;
             CFRelease(valueRef);
         }
     }
