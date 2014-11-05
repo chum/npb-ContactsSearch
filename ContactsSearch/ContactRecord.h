@@ -19,11 +19,13 @@
 
 - (ABRecordRef) contact;
 - (NSString*) displayString;
+- (NSString*) lastName;
 - (NSString*) longDisplayString;
 - (NSString*) phoneNumber;
 - (void) updateScore;
 
 - (void) debugGetScoreParams;
 
+@property(readwrite, nonatomic) int lastNameBonus;
 @property(readonly, nonatomic) int score;
 @end

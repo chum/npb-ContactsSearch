@@ -190,6 +190,22 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
 }
 
 
+#pragma mark - Access
+
+//* CRUFT
+//- (void) setContact: (ABRecordRef) contact
+//{
+//}
+
+
+- (void) setLastNameBonus: (int) lastNameBonus
+{
+    _lastNameBonus = lastNameBonus;
+
+    [self updateScore];
+}
+
+
 #pragma mark -
 
 - (ABRecordRef) contact
@@ -239,6 +255,14 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
 }
 
 
+- (NSString*) lastName
+{
+    NSString *lastName  = (__bridge NSString*) (ABRecordCopyValue(abContact, kABPersonLastNameProperty));
+
+    return lastName;
+}
+
+
 - (NSString*) longDisplayString
 {
     // get contact info
@@ -275,11 +299,6 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
     }
 
     return result;
-}
-
-
-- (void) setContact: (ABRecordRef) contact
-{
 }
 
 
@@ -376,6 +395,9 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
     {
         _score += scoreImage;
     }
+
+    // Apply last-name bonus
+    _score += self.lastNameBonus;
 
     if (_score < scoreThreshhold)
     {

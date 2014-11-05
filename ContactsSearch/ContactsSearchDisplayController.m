@@ -8,9 +8,15 @@
 
 #import "ContactsSearchDisplayController.h"
 
+#import "ScoreParamsViewController.h"                                           // DEBUG: to get score values
+
 
 @interface ContactsSearchDisplayController ()
+{
+    int lastNameBonus;
+}
 @property(strong, nonatomic) NSMutableArray *allContacts;
+@property(strong, nonatomic) NSMutableDictionary *contactsByLastName;
 @property(strong, nonatomic) NSString *previousSearchText;
 @property(strong, nonatomic) NSMutableArray *tableItems;
 @end
@@ -35,6 +41,7 @@
     if (self)
     {
         _allContacts = [NSMutableArray new];
+        _contactsByLastName = [NSMutableDictionary new];
         _tableItems  = [NSMutableArray new];
         _previousSearchText = @"";
     }
@@ -47,6 +54,10 @@
 - (void) viewDidLoad
 {
     [super viewDidLoad];
+
+    lastNameBonus = [[NSUserDefaults standardUserDefaults] integerForKey: UD_SORT_SAME_AS_CONTACT];
+
+    NSLog(@"%s lnb: %d", __PRETTY_FUNCTION__, lastNameBonus);
 
     [self updateContacts];
     [self updateTableItems];
@@ -77,6 +88,29 @@
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
 
     return accessGranted;
+}
+
+
+- (void) adjustLastNameBonuses
+{
+    // Give every contact a last-name bonus
+    int allContactsCount = (int) [_allContacts count];
+    for (int ii = 0 ; ii < allContactsCount ; ++ii)
+    {
+        NSSet *oneContactSet = [_allContacts objectAtIndex: ii];
+
+        // for each contact within a set
+        NSArray *contacts = [oneContactSet allObjects];
+        int contactCount = (int) [contacts count];
+        for (int index = 0 ; index < contactCount ; ++index)
+        {
+            ContactRecord *oneContact = [contacts objectAtIndex: index];
+            NSString *lastName = [oneContact lastName];
+            int lnCount = [[_contactsByLastName objectForKey: lastName] count];
+            int bonus = MIN(3, (lnCount - 1));
+            oneContact.lastNameBonus = (bonus * bonus * lastNameBonus);
+        }
+    }
 }
 
 
@@ -135,6 +169,7 @@
 - (void) updateContacts
 {
     [_allContacts removeAllObjects];
+    [_contactsByLastName removeAllObjects];
 
     CFErrorRef error = nil;
     ABAddressBookRef addressBook = ABAddressBookCreateWithOptions (NULL, &error);
@@ -161,8 +196,8 @@
             ContactRecord *contactRecord = [ContactRecord contactWithABRecord: abRecord];
 
             // For each contact, create a set with all of the linked contacts
-            NSMutableSet *contactSet = [NSMutableSet set];
-            [contactSet addObject: contactRecord];
+            NSMutableSet *unifiedRecord = [NSMutableSet set];
+            [unifiedRecord addObject: contactRecord];
 
             NSArray *linkedRecordsArray = (__bridge NSArray*) ABPersonCopyArrayOfAllLinkedPeople(abRecord);
             int linkCount = (int) [linkedRecordsArray count];
@@ -170,34 +205,32 @@
             {
                 ABRecordRef abLink = (__bridge ABRecordRef) [linkedRecordsArray objectAtIndex: link];
                 ContactRecord *contactLink = [ContactRecord contactWithABRecord: abLink];
-                [contactSet addObject: contactLink];
+                [unifiedRecord addObject: contactLink];
             }
 
             // Add this set of contacts to our master set (weeding-out duplicates)
-            NSSet *unifiedRecord = [[NSSet alloc] initWithSet: contactSet];
             [unifiedRecordsSet addObject: unifiedRecord];
+
+            // Also track contacts by last name
+            NSString *lastName = [contactRecord lastName];
+            if (lastName != nil)
+            {
+                NSMutableArray *lastNameSets = [_contactsByLastName objectForKey: lastName];
+                if (lastNameSets == nil)
+                {
+                    lastNameSets = [NSMutableArray new];
+                    [_contactsByLastName setObject: lastNameSets forKey: lastName];
+                }
+                [lastNameSets addObject: contactRecord];
+            }
         }
         
         CFRelease(records);
         CFRelease(addressBook);
 
-        for (NSSet *contactSet in unifiedRecordsSet)
-        {
-            [_allContacts addObject: contactSet];
-
-// Debug logging
-//            int setCount = (int) [contactSet count];
-//            if (setCount > 1)
-//            {
-//                //NSLog(@"%s Linked contacts:", __PRETTY_FUNCTION__);
-//                NSArray *tmpArray = [contactSet allObjects];
-//                for (int index = 0 ; index < setCount ; ++index)
-//                {
-//                    ContactRecord *contact = [tmpArray objectAtIndex: index];
-//                    NSLog(@"%s .. %@", __PRETTY_FUNCTION__, [contact displayString]);
-//                }
-//            }
-        }
+        // Add all objects
+        [_allContacts addObjectsFromArray: [unifiedRecordsSet allObjects]];
+        [self adjustLastNameBonuses];
 
         NSLog(@"%s contacts: %d", __PRETTY_FUNCTION__, (int) [_allContacts count]);
     
@@ -375,27 +408,7 @@
 - (void) debugUpdateSortCriteria
 {
     [ContactRecord reinitialize];
-
-    int allContactsCount = (int) [_allContacts count];
-    NSLog(@"There are %d entries in your contacts list.", allContactsCount);
-
-    // check all contact-sets
-    for (int ii = 0 ; ii < allContactsCount ; ++ii)
-    {
-        NSSet *oneContactSet = [_allContacts objectAtIndex: ii];
-
-        // check each contact within a set
-        NSArray *contacts = [oneContactSet allObjects];
-        int contactCount = (int) [contacts count];
-        for (int index = 0 ; index < contactCount ; ++index)
-        {
-            ContactRecord *oneContact = [contacts objectAtIndex: index];
-
-            [oneContact debugGetScoreParams];
-            [oneContact updateScore];
-
-        }
-    }
+    [self adjustLastNameBonuses];
 
     _allContacts = [[self sortContacts: _allContacts] mutableCopy];
 
