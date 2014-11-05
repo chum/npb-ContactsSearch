@@ -14,7 +14,7 @@
                 <outlet property="phoneNumberField" destination="iza-JR-AUm" id="iMp-C5-fH6"/>
                 <outlet property="relatedBonusField" destination="Zhf-l3-5JB" id="P4S-B0-Rd5"/>
                 <outlet property="sameAsContactField" destination="cdk-JU-G6q" id="2Ct-9T-69r"/>
-                <outlet property="sameAsMeField" destination="BAV-KJ-xnQ" id="GvA-9O-a0L"/>
+                <outlet property="squaringBonusField" destination="BAV-KJ-xnQ" id="6Tr-M8-BBr"/>
                 <outlet property="threshholdField" destination="hI9-8J-J5r" id="fdN-Or-7bY"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -75,12 +75,6 @@
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Same last-name as &quot;me&quot; bonus:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="200-U5-yay">
-                    <rect key="frame" x="48" y="298" width="143" height="42"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                    <nil key="highlightedColor"/>
-                </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Same last-name as another contact bonus:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k19-BY-kNt">
                     <rect key="frame" x="7" y="335" width="184" height="43"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -95,7 +89,7 @@
                         <outlet property="delegate" destination="-1" id="8eE-Yw-FA2"/>
                     </connections>
                 </textField>
-                <textField hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="BAV-KJ-xnQ">
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="BAV-KJ-xnQ">
                     <rect key="frame" x="199" y="304" width="97" height="30"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
@@ -183,6 +177,11 @@
                         <action selector="cancelAction:" destination="-1" eventType="touchUpInside" id="4pa-CE-HmM"/>
                     </connections>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Squaring bonus max:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="200-U5-yay">
+                    <rect key="frame" x="27" y="298" width="164" height="42"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <nil key="simulatedStatusBarMetrics"/>

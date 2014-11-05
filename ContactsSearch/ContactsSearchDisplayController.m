@@ -14,6 +14,7 @@
 @interface ContactsSearchDisplayController ()
 {
     int lastNameBonus;
+    int squaringMax;
 }
 @property(strong, nonatomic) NSMutableArray *allContacts;
 @property(strong, nonatomic) NSMutableDictionary *contactsByLastName;
@@ -55,10 +56,6 @@
 {
     [super viewDidLoad];
 
-    lastNameBonus = [[NSUserDefaults standardUserDefaults] integerForKey: UD_SORT_SAME_AS_CONTACT];
-
-    NSLog(@"%s lnb: %d", __PRETTY_FUNCTION__, lastNameBonus);
-
     [self updateContacts];
     [self updateTableItems];
 }
@@ -93,6 +90,10 @@
 
 - (void) adjustLastNameBonuses
 {
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    squaringMax   = [ud integerForKey: UD_SORT_SQUARING_MAX];
+    lastNameBonus = [ud integerForKey: UD_SORT_SAME_AS_CONTACT];
+
     // Give every contact a last-name bonus
     int allContactsCount = (int) [_allContacts count];
     for (int ii = 0 ; ii < allContactsCount ; ++ii)
@@ -107,7 +108,7 @@
             ContactRecord *oneContact = [contacts objectAtIndex: index];
             NSString *lastName = [oneContact lastName];
             int lnCount = [[_contactsByLastName objectForKey: lastName] count];
-            int bonus = MIN(3, (lnCount - 1));
+            int bonus = MIN(squaringMax, (lnCount - 1));
             oneContact.lastNameBonus = (bonus * bonus * lastNameBonus);
         }
     }

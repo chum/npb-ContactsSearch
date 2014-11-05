@@ -67,9 +67,9 @@
         self.relatedBonusField.text = [[ud objectForKey: UD_SORT_RELATED] stringValue];
         self.birthdayField.text     = [[ud objectForKey: UD_SORT_BIRTHDAY] stringValue];
         self.phoneNumberField.text  = [[ud objectForKey: UD_SORT_PHONE_NUMBER] stringValue];
-        self.sameAsMeField.text     = [[ud objectForKey: UD_SORT_SAME_AS_ME] stringValue];
         self.sameAsContactField.text= [[ud objectForKey: UD_SORT_SAME_AS_CONTACT] stringValue];
         self.threshholdField.text   = [[ud objectForKey: UD_SORT_THRESHOLD] stringValue];
+        self.squaringBonusField.text= [[ud objectForKey: UD_SORT_SQUARING_MAX] stringValue];
     }
 }
 
@@ -83,10 +83,10 @@
     self.imageBonusField.text   = @"20";
     self.relatedBonusField.text = @"200";
     self.birthdayField.text     = @"250";
-    self.phoneNumberField.text  = @"40";
-    self.sameAsMeField.text     = @"500";
-    self.sameAsContactField.text= @"100";
+    self.phoneNumberField.text  = @"50";
+    self.sameAsContactField.text= @"200";
     self.threshholdField.text   = @"0";
+    self.squaringBonusField.text= @"3";
 }
 
 
@@ -116,7 +116,7 @@
     [ud setInteger: [self.relatedBonusField.text  intValue] forKey: UD_SORT_RELATED];
     [ud setInteger: [self.birthdayField.text      intValue] forKey: UD_SORT_BIRTHDAY];
     [ud setInteger: [self.phoneNumberField.text   intValue] forKey: UD_SORT_PHONE_NUMBER];
-    [ud setInteger: [self.sameAsMeField.text      intValue] forKey: UD_SORT_SAME_AS_ME];
+    [ud setInteger: [self.squaringBonusField.text intValue] forKey: UD_SORT_SQUARING_MAX];
     [ud setInteger: [self.sameAsContactField.text intValue] forKey: UD_SORT_SAME_AS_CONTACT];
     [ud setInteger: [self.threshholdField.text    intValue] forKey: UD_SORT_THRESHOLD];
 

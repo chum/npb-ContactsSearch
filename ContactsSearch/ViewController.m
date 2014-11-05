@@ -28,8 +28,6 @@
 
 - (void) awakeFromNib
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
-
     [super awakeFromNib];
 
     [[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(sortParamsUpdated:) name: SORT_PARAMS_UPDATED object: nil];

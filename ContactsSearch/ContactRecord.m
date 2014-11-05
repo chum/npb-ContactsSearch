@@ -22,7 +22,7 @@
     int scoreRelated;
     int scoreBirthday;
     int scorePhoneNumber;
-    int scoreSameAsMe;
+    int scoreSquaringMax;
     int scoreSameAsContact;
     int scoreThreshhold;
 }
@@ -192,12 +192,6 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
 
 #pragma mark - Access
 
-//* CRUFT
-//- (void) setContact: (ABRecordRef) contact
-//{
-//}
-
-
 - (void) setLastNameBonus: (int) lastNameBonus
 {
     _lastNameBonus = lastNameBonus;
@@ -307,8 +301,6 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
     // Ref: http://dbader.org/blog/guessing-favorite-contacts-ios
     // Highly modified, but we started there.
 
-    const NSInteger maxMultiValue               = 3;                            // give bonus for more, but not more than this many
-
     _score = 0;
 
     // if no name, we're done
@@ -380,9 +372,9 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
         if (valueRef)
         {
             CFIndex count = ABMultiValueGetCount(valueRef);
-            if (count > maxMultiValue)
+            if (count > scoreSquaringMax)
             {
-                count = maxMultiValue;
+                count = scoreSquaringMax;
             }
 
             _score += count * count * pair.score;
@@ -421,7 +413,7 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
         scoreRelated        = 200;
         scoreBirthday       = 250;
         scorePhoneNumber    = 40;
-        scoreSameAsMe       = 500;
+        scoreSquaringMax    = 3;
         scoreSameAsContact  = 100;
         scoreThreshhold     = 0;
     }
@@ -434,7 +426,7 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
         scoreRelated        = [ud integerForKey: UD_SORT_RELATED];
         scoreBirthday       = [ud integerForKey: UD_SORT_BIRTHDAY];
         scorePhoneNumber    = [ud integerForKey: UD_SORT_PHONE_NUMBER];
-        scoreSameAsMe       = [ud integerForKey: UD_SORT_SAME_AS_ME];
+        scoreSquaringMax    = [ud integerForKey: UD_SORT_SQUARING_MAX];
         scoreSameAsContact  = [ud integerForKey: UD_SORT_SAME_AS_CONTACT];
         scoreThreshhold     = [ud integerForKey: UD_SORT_THRESHOLD];
     }

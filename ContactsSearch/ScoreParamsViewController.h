@@ -16,9 +16,9 @@
 #define UD_SORT_RELATED             @"sort-related"
 #define UD_SORT_BIRTHDAY            @"sort-birthday"
 #define UD_SORT_PHONE_NUMBER        @"sort-phone#"
-#define UD_SORT_SAME_AS_ME          @"sort-same-as-me"
 #define UD_SORT_SAME_AS_CONTACT     @"sort-same-as-contact"
 #define UD_SORT_THRESHOLD           @"sort-threshold"
+#define UD_SORT_SQUARING_MAX        @"sort-squaring-max"
 
 @interface ScoreParamsViewController : UIViewController
     <UITextFieldDelegate>
@@ -29,7 +29,7 @@
 @property(weak, nonatomic) IBOutlet UITextField *relatedBonusField;
 @property(weak, nonatomic) IBOutlet UITextField *birthdayField;
 @property(weak, nonatomic) IBOutlet UITextField *phoneNumberField;
-@property(weak, nonatomic) IBOutlet UITextField *sameAsMeField;
+@property(weak, nonatomic) IBOutlet UITextField *squaringBonusField;
 @property(weak, nonatomic) IBOutlet UITextField *sameAsContactField;
 @property(weak, nonatomic) IBOutlet UITextField *threshholdField;
 @end
