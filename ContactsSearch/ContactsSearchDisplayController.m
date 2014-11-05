@@ -19,9 +19,6 @@
 
 @implementation ContactsSearchDisplayController
 
-#define USE_UNIFIED_CONTACTS            1
-
-
 #pragma mark - Lifecycle
 
 + (ContactsSearchDisplayController*) csdc
@@ -85,28 +82,19 @@
 
 - (ContactRecord*) contactInArray: (NSArray*) array atIndex: (int) index
 {
-#if USE_UNIFIED_CONTACTS
     NSSet *contactSet = [array objectAtIndex: index];
     ContactRecord *contact = [self contactFromUnifiedSet: contactSet];
-
-#else
-    ContactRecord *contact = [array objectAtIndex: index];
-
-#endif
 
     return contact;
 }
 
 
-#if USE_UNIFIED_CONTACTS
 - (ContactRecord*) contactFromUnifiedSet: (NSSet*) contactSet
 {
     ContactRecord *result = [contactSet anyObject];
 
     return result;
 }
-
-#endif
 
 
 + (BOOL) phoneNumberIsValid: (NSString*) phoneNumber
@@ -121,17 +109,12 @@
 - (NSArray*) sortContacts: (NSArray*) contacts
 {
     NSArray *result = [contacts sortedArrayUsingComparator: ^NSComparisonResult(id obj1, id obj2) {
-#if USE_UNIFIED_CONTACTS
         NSSet *s1 = obj1;
         NSSet *s2 = obj2;
 
         ContactRecord *c1 = [self contactFromUnifiedSet: s1];
         ContactRecord *c2 = [self contactFromUnifiedSet: s2];
 
-#else
-        ContactRecord *c1 = obj1;
-        ContactRecord *c2 = obj2;
-#endif
         NSComparisonResult scoreCompare = [@(-c1.score) compare: @(-c2.score)]; // negative to reverse the sort (highest on top)
 
         if (scoreCompare == NSOrderedSame)
@@ -164,8 +147,6 @@
 
     if (accessGranted)
     {
-
-#if USE_UNIFIED_CONTACTS   // New way
         // See: http://stackoverflow.com/questions/11351454/dealing-with-duplicate-contacts-due-to-linked-cards-in-ios-address-book-api
         //NSLog(@"%s (new way)", __PRETTY_FUNCTION__);
 
@@ -220,15 +201,6 @@
 
         NSLog(@"%s contacts: %d", __PRETTY_FUNCTION__, (int) [_allContacts count]);
     
-#else   // Old way
-        NSArray *myContacts = (__bridge NSArray*) ABAddressBookCopyArrayOfAllPeople (addressBook);
-
-        NSLog(@"%s [DEBUG] %ld contacts", __PRETTY_FUNCTION__, (unsigned long)[myContacts count]);
-
-        [_allContacts addObjectsFromArray: myContacts];
-
-#endif
-
         _allContacts = [[self sortContacts: _allContacts] mutableCopy];
     }
     else
@@ -363,7 +335,6 @@
     // check all contact-sets
     for (int ii = 0 ; ii < allContactsCount ; ++ii)
     {
-#if USE_UNIFIED_CONTACTS
         NSSet *oneContactSet = [_allContacts objectAtIndex: ii];
 
         // check each contact within a set
@@ -373,17 +344,11 @@
         {
             ContactRecord *oneContact = [contacts objectAtIndex: index];
 
-#else
-            ContactRecord *oneContact = [_allContacts objectAtIndex: ii];
-
-#endif
             // Look for Jill
             NSString *displayString = [oneContact displayString];
             NSRange found = [[displayString lowercaseString] rangeOfString: @"jill"];
             if (found.location != NSNotFound)
             {
-
-#if USE_UNIFIED_CONTACTS
                 // We found Jill!
                 NSLog(@"Item #%d contains %d contacts (> 1 indicates 'linked' contacts", ii, contactCount);
                 for (int ind2 = 0 ; ind2 < contactCount ; ++ind2)
@@ -393,21 +358,12 @@
                     NSLog (@" .. Item %d-%d is contact:\n%@", ii, ind2, fullString);
                     NSLog (@"");
                 }
-#else
-                NSString *fullString = [oneContact longDisplayString];
-                NSLog(@"Item #%d is:\n%@", ii, fullString);
 
-#endif
                 NSLog(@"==========\n");
 
-#if USE_UNIFIED_CONTACTS
                 break;
-
-#endif
             }
-#if USE_UNIFIED_CONTACTS
         }
-#endif
     }
 
     NSLog(@"%s .. end.\n\n\n", __PRETTY_FUNCTION__);
@@ -424,7 +380,6 @@
     // check all contact-sets
     for (int ii = 0 ; ii < allContactsCount ; ++ii)
     {
-#if USE_UNIFIED_CONTACTS
         NSSet *oneContactSet = [_allContacts objectAtIndex: ii];
 
         // check each contact within a set
@@ -434,16 +389,10 @@
         {
             ContactRecord *oneContact = [contacts objectAtIndex: index];
 
-#else
-            ContactRecord *oneContact = [_allContacts objectAtIndex: ii];
-
-#endif
             [oneContact debugGetScoreParams];
             [oneContact updateScore];
 
-#if USE_UNIFIED_CONTACTS
         }
-#endif
     }
 
     _allContacts = [[self sortContacts: _allContacts] mutableCopy];
