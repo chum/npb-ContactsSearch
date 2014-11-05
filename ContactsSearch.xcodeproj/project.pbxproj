@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		4D1880871A02B48500CD3F88 /* ContactRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D1880861A02B48500CD3F88 /* ContactRecord.m */; };
+		4D90610C1A09B5C20075EA7B /* ScoreParamsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D90610A1A09B5C20075EA7B /* ScoreParamsViewController.m */; };
+		4D90610D1A09B5C20075EA7B /* ScoreParamsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D90610B1A09B5C20075EA7B /* ScoreParamsViewController.xib */; };
 		4DCC9CFC19FFFCFD00FBCE70 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DCC9CFB19FFFCFD00FBCE70 /* main.m */; };
 		4DCC9CFF19FFFCFD00FBCE70 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DCC9CFE19FFFCFD00FBCE70 /* AppDelegate.m */; };
 		4DCC9D0219FFFCFD00FBCE70 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DCC9D0119FFFCFD00FBCE70 /* ViewController.m */; };
@@ -35,6 +37,9 @@
 /* Begin PBXFileReference section */
 		4D1880851A02B48500CD3F88 /* ContactRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactRecord.h; sourceTree = "<group>"; };
 		4D1880861A02B48500CD3F88 /* ContactRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactRecord.m; sourceTree = "<group>"; };
+		4D9061091A09B5C20075EA7B /* ScoreParamsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoreParamsViewController.h; sourceTree = "<group>"; };
+		4D90610A1A09B5C20075EA7B /* ScoreParamsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoreParamsViewController.m; sourceTree = "<group>"; };
+		4D90610B1A09B5C20075EA7B /* ScoreParamsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ScoreParamsViewController.xib; sourceTree = "<group>"; };
 		4DCC9CF619FFFCFD00FBCE70 /* ContactsSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ContactsSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DCC9CFA19FFFCFD00FBCE70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4DCC9CFB19FFFCFD00FBCE70 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -76,6 +81,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4D9061081A09B5900075EA7B /* Contacts management */ = {
+			isa = PBXGroup;
+			children = (
+				4D1880851A02B48500CD3F88 /* ContactRecord.h */,
+				4D1880861A02B48500CD3F88 /* ContactRecord.m */,
+				4DCC9D2B1A000E5F00FBCE70 /* ContactsSearchDisplayController.h */,
+				4DCC9D2C1A000E5F00FBCE70 /* ContactsSearchDisplayController.m */,
+				4DCC9D2D1A000E5F00FBCE70 /* ContactsSearchDisplayController.xib */,
+				4D90610E1A09B5C70075EA7B /* Score Params VC */,
+			);
+			name = "Contacts management";
+			sourceTree = "<group>";
+		};
+		4D90610E1A09B5C70075EA7B /* Score Params VC */ = {
+			isa = PBXGroup;
+			children = (
+				4D9061091A09B5C20075EA7B /* ScoreParamsViewController.h */,
+				4D90610A1A09B5C20075EA7B /* ScoreParamsViewController.m */,
+				4D90610B1A09B5C20075EA7B /* ScoreParamsViewController.xib */,
+			);
+			name = "Score Params VC";
+			sourceTree = "<group>";
+		};
 		4DCC9CED19FFFCFD00FBCE70 = {
 			isa = PBXGroup;
 			children = (
@@ -99,11 +127,7 @@
 		4DCC9CF819FFFCFD00FBCE70 /* ContactsSearch */ = {
 			isa = PBXGroup;
 			children = (
-				4D1880851A02B48500CD3F88 /* ContactRecord.h */,
-				4D1880861A02B48500CD3F88 /* ContactRecord.m */,
-				4DCC9D2B1A000E5F00FBCE70 /* ContactsSearchDisplayController.h */,
-				4DCC9D2C1A000E5F00FBCE70 /* ContactsSearchDisplayController.m */,
-				4DCC9D2D1A000E5F00FBCE70 /* ContactsSearchDisplayController.xib */,
+				4D9061081A09B5900075EA7B /* Contacts management */,
 				4DCC9D271A00093100FBCE70 /* App Support */,
 				4DCC9D281A00093800FBCE70 /* Main view */,
 				4DCC9CF919FFFCFD00FBCE70 /* Supporting Files */,
@@ -250,6 +274,7 @@
 				4DCC9D0519FFFCFD00FBCE70 /* Main.storyboard in Resources */,
 				4DCC9D0A19FFFCFD00FBCE70 /* LaunchScreen.xib in Resources */,
 				4DCC9D0719FFFCFD00FBCE70 /* Images.xcassets in Resources */,
+				4D90610D1A09B5C20075EA7B /* ScoreParamsViewController.xib in Resources */,
 				4DCC9D2F1A000E5F00FBCE70 /* ContactsSearchDisplayController.xib in Resources */,
 				4DCC9D311A00369B00FBCE70 /* README.txt in Resources */,
 			);
@@ -270,6 +295,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4DCC9D0219FFFCFD00FBCE70 /* ViewController.m in Sources */,
+				4D90610C1A09B5C20075EA7B /* ScoreParamsViewController.m in Sources */,
 				4D1880871A02B48500CD3F88 /* ContactRecord.m in Sources */,
 				4DCC9D2E1A000E5F00FBCE70 /* ContactsSearchDisplayController.m in Sources */,
 				4DCC9CFF19FFFCFD00FBCE70 /* AppDelegate.m in Sources */,

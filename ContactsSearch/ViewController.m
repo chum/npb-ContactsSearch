@@ -8,6 +8,8 @@
 
 #import "ViewController.h"
 
+#import "ScoreParamsViewController.h"
+
 
 @interface ViewController ()
 @property(strong, nonatomic) ContactsSearchDisplayController *csdc;
@@ -50,6 +52,8 @@
 
 - (IBAction) debugAdjustSort: (id) sender
 {
+    ScoreParamsViewController *vc = [[ScoreParamsViewController alloc] initWithNibName: nil bundle: nil];
+    [self presentViewController: vc animated: YES completion: nil];
 }
 
 
