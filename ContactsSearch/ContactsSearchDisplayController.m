@@ -240,6 +240,8 @@
             [_tableItems addObject: contactSet];
         }
     }
+
+    [self.searchDisplayController.searchResultsTableView reloadData];
 }
 
 
