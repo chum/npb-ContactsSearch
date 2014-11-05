@@ -43,6 +43,17 @@
 {
     [super viewDidLoad];
 
+    // Fix silly UILabel "Automatic Preferred Max Layout Width" warning
+    for (UIView *oneView in self.view.subviews)
+    {
+        if ([oneView isKindOfClass: [UILabel class]])
+        {
+            UILabel *oneLabel = (UILabel*) oneView;
+            oneLabel.numberOfLines = 0;
+        }
+    }
+
+    // set up sort-param fields.
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
     if ([ud objectForKey: UD_SORT_THRESHOLD] == nil)
     {
