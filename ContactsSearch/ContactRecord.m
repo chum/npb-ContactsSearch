@@ -8,10 +8,23 @@
 
 #import "ContactRecord.h"
 
+#import "ScoreParamsViewController.h"                                           // DEBUG: used for sort parameters
+
 
 @interface ContactRecord()
 {
     ABRecordRef abContact;
+
+    // score parameters
+    int scoreNonPerson;
+    int scoreNoPhone;
+    int scoreImage;
+    int scoreRelated;
+    int scoreBirthday;
+    int scorePhoneNumber;
+    int scoreSameAsMe;
+    int scoreSameAsContact;
+    int scoreThreshhold;
 }
 
 @property(readwrite, nonatomic) int score;
@@ -20,9 +33,6 @@
 
 
 #pragma mark - DBFriendFinder specific
-
-static NSInteger const IMAGE_SCORE = 20;
-static NSInteger const NON_PERSON_PENALTY = 100;
 
 // Lookup tables for properties and their score values.
 // Single and multivalue properties are treated differently.
@@ -90,12 +100,34 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
 
 + (void) initialize
 {
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+
+    // get default values
+    int crScoreRelated;
+    int crScoreBirthday;
+    int crScorePhoneNumber;
+
+    if ([ud objectForKey: UD_SORT_THRESHOLD] == nil)
+    {
+        // set defaults
+        crScoreRelated        = 200;
+        crScoreBirthday       = 250;
+        crScorePhoneNumber    = 40;
+    }
+    else
+    {
+        // read values
+        crScoreRelated        = [ud integerForKey: UD_SORT_RELATED];
+        crScoreBirthday       = [ud integerForKey: UD_SORT_BIRTHDAY];
+        crScorePhoneNumber    = [ud integerForKey: UD_SORT_PHONE_NUMBER];
+    }
+
     if (SINGLEVALUE_PROPERTIES == nil)
     {
         SINGLEVALUE_PROPERTIES = @[
                // Contacts with nicknames and birthdays are likely to be more important.
                [__DBPropertyScorePair pairWithProperty: kABPersonNicknameProperty           score:  50],
-               [__DBPropertyScorePair pairWithProperty: kABPersonBirthdayProperty           score: 150],
+               [__DBPropertyScorePair pairWithProperty: kABPersonBirthdayProperty           score: crScoreBirthday],
                [__DBPropertyScorePair pairWithProperty: kABPersonFirstNameProperty          score:  10],
                [__DBPropertyScorePair pairWithProperty: kABPersonLastNameProperty           score:  10],
                [__DBPropertyScorePair pairWithProperty: kABPersonMiddleNameProperty         score:  30],
@@ -117,10 +149,10 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
               // Related names and associated dates (anniversaries) are likely to indicate
               // close relationships. Also, phone numbers and addresses rank higher than emails
               // and IM profiles.
-              [__DBPropertyScorePair pairWithProperty: kABPersonRelatedNamesProperty   score: 200],
+              [__DBPropertyScorePair pairWithProperty: kABPersonRelatedNamesProperty   score: crScoreRelated],
               [__DBPropertyScorePair pairWithProperty: kABPersonDateProperty           score: 250],
               [__DBPropertyScorePair pairWithProperty: kABPersonAddressProperty        score:  50],
-              [__DBPropertyScorePair pairWithProperty: kABPersonPhoneProperty          score:  40],
+              [__DBPropertyScorePair pairWithProperty: kABPersonPhoneProperty          score:  crScorePhoneNumber],
               [__DBPropertyScorePair pairWithProperty: kABPersonEmailProperty          score:  15],
               ];
     }
@@ -245,7 +277,6 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
 {
     // Ref: http://dbader.org/blog/guessing-favorite-contacts-ios
 
-    const NSInteger favoriteScoreThreshhold     = 0;
     const NSInteger maxMultiValue               = 3;                            // give bonus for more, but not more than this many
 
     _score = 0;
@@ -255,7 +286,7 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
     CFNumberRef contactKind = ABRecordCopyValue(abContact, kABPersonKindProperty);
     if (contactKind && contactKind != kABPersonKindPerson)
     {
-        _score -= NON_PERSON_PENALTY;
+        _score -= scoreNonPerson;
     }
 
     if (contactKind)
@@ -317,13 +348,52 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
     // Give score if a contact has an associated image.
     if (ABPersonHasImageData(abContact))
     {
-        _score += IMAGE_SCORE;
+        _score += scoreImage;
     }
 
-    if (_score < favoriteScoreThreshhold)
+    if (_score < scoreThreshhold)
     {
         _score = 0;
     }
+}
+
+
+- (void) debugGetScoreParams
+{
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+
+    if ([ud objectForKey: UD_SORT_THRESHOLD] == nil)
+    {
+        // set defaults
+        scoreNonPerson      = 100;
+        scoreNoPhone        = 1000;
+        scoreImage          = 20;
+        scoreRelated        = 200;
+        scoreBirthday       = 250;
+        scorePhoneNumber    = 40;
+        scoreSameAsMe       = 500;
+        scoreSameAsContact  = 100;
+        scoreThreshhold     = 0;
+    }
+    else
+    {
+        // read values
+        scoreNonPerson      = [ud integerForKey: UD_SORT_NON_PERSON];
+        scoreNoPhone        = [ud integerForKey: UD_SORT_NO_PHONE];
+        scoreImage          = [ud integerForKey: UD_SORT_IMAGE];
+        scoreRelated        = [ud integerForKey: UD_SORT_RELATED];
+        scoreBirthday       = [ud integerForKey: UD_SORT_BIRTHDAY];
+        scorePhoneNumber    = [ud integerForKey: UD_SORT_PHONE_NUMBER];
+        scoreSameAsMe       = [ud integerForKey: UD_SORT_SAME_AS_ME];
+        scoreSameAsContact  = [ud integerForKey: UD_SORT_SAME_AS_CONTACT];
+        scoreThreshhold     = [ud integerForKey: UD_SORT_THRESHOLD];
+    }
+
+    SINGLEVALUE_PROPERTIES = nil;
+    MULTIVALUE_PROPERTIES = nil;
+    MULTIBONUS_PROPERTIES = nil;
+
+    [ContactRecord initialize];
 }
 
 

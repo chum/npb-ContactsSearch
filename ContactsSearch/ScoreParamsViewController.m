@@ -42,6 +42,40 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    if ([ud objectForKey: UD_SORT_THRESHOLD] == nil)
+    {
+        [self setDefaults];
+    }
+    else
+    {
+        self.nonPersonField.text    = [[ud objectForKey: UD_SORT_NON_PERSON] stringValue];
+        self.noPhoneField.text      = [[ud objectForKey: UD_SORT_NO_PHONE] stringValue];
+        self.imageBonusField.text   = [[ud objectForKey: UD_SORT_IMAGE] stringValue];
+        self.relatedBonusField.text = [[ud objectForKey: UD_SORT_RELATED] stringValue];
+        self.birthdayField.text     = [[ud objectForKey: UD_SORT_BIRTHDAY] stringValue];
+        self.phoneNumberField.text  = [[ud objectForKey: UD_SORT_PHONE_NUMBER] stringValue];
+        self.sameAsMeField.text     = [[ud objectForKey: UD_SORT_SAME_AS_ME] stringValue];
+        self.sameAsContactField.text= [[ud objectForKey: UD_SORT_SAME_AS_CONTACT] stringValue];
+        self.threshholdField.text   = [[ud objectForKey: UD_SORT_THRESHOLD] stringValue];
+    }
+}
+
+
+#pragma mark - Support
+
+- (void) setDefaults
+{
+    self.nonPersonField.text    = @"100";
+    self.noPhoneField.text      = @"1000";
+    self.imageBonusField.text   = @"20";
+    self.relatedBonusField.text = @"200";
+    self.birthdayField.text     = @"250";
+    self.phoneNumberField.text  = @"40";
+    self.sameAsMeField.text     = @"500";
+    self.sameAsContactField.text= @"100";
+    self.threshholdField.text   = @"0";
 }
 
 
@@ -63,6 +97,29 @@
 
 - (IBAction) okAction: (id) sender
 {
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+
+    [ud setInteger: [self.nonPersonField.text     intValue] forKey: UD_SORT_NON_PERSON];
+    [ud setInteger: [self.noPhoneField.text       intValue] forKey: UD_SORT_NO_PHONE];
+    [ud setInteger: [self.imageBonusField.text    intValue] forKey: UD_SORT_IMAGE];
+    [ud setInteger: [self.relatedBonusField.text  intValue] forKey: UD_SORT_RELATED];
+    [ud setInteger: [self.birthdayField.text      intValue] forKey: UD_SORT_BIRTHDAY];
+    [ud setInteger: [self.phoneNumberField.text   intValue] forKey: UD_SORT_PHONE_NUMBER];
+    [ud setInteger: [self.sameAsMeField.text      intValue] forKey: UD_SORT_SAME_AS_ME];
+    [ud setInteger: [self.sameAsContactField.text intValue] forKey: UD_SORT_SAME_AS_CONTACT];
+    [ud setInteger: [self.threshholdField.text    intValue] forKey: UD_SORT_THRESHOLD];
+
+    [ud synchronize];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName: SORT_PARAMS_UPDATED object: self];
+
+    [self dismissViewControllerAnimated: YES completion: nil];
+}
+
+
+- (IBAction) resetAction: (id) sender
+{
+    [self setDefaults];
 }
 
 

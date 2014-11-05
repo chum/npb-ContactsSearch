@@ -20,6 +20,22 @@
 
 #pragma mark - Lifecycle
 
+- (void) dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
+}
+
+
+- (void) awakeFromNib
+{
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+
+    [super awakeFromNib];
+
+    [[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(sortParamsUpdated:) name: SORT_PARAMS_UPDATED object: nil];
+}
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -60,6 +76,14 @@
 - (IBAction) debugJillTest: (id) sender
 {
     [_csdc debugJillTest];
+}
+
+
+#pragma mark - Notifications
+
+- (void) sortParamsUpdated: (NSNotification*) note
+{
+    [_csdc debugUpdateSortCriteria];
 }
 
 
