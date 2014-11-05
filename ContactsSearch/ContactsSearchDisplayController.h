@@ -27,6 +27,7 @@
 + (BOOL) phoneNumberIsValid: (NSString*) phoneNumber;
 
 - (void) debugJillTest;
+- (void) debugUpdateSortCriteria;
 
 @property(weak, nonatomic) id<ContactSearchDelegate> csDelegate;
 

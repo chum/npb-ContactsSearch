@@ -19,11 +19,32 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bMi-V7-l5Z">
-                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                                <rect key="frame" x="0.0" y="48" width="600" height="552"/>
                                 <color key="backgroundColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EBz-y8-jY4">
+                                <rect key="frame" x="16" y="8" width="166" height="40"/>
+                                <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="Ygu-NJ-WAy"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="166" id="bda-L0-D6h"/>
+                                    <constraint firstAttribute="width" constant="166" id="cMe-Yj-EnD"/>
+                                </constraints>
+                                <state key="normal" title="Adjust sort criteria">
+                                    <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="bda-L0-D6h"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <action selector="debugAdjustSort:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="nKd-Uf-fWT"/>
+                                </connections>
+                            </button>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NHv-1i-bXW">
-                                <rect key="frame" x="524" y="83" width="60" height="40"/>
+                                <rect key="frame" x="540" y="8" width="60" height="40"/>
                                 <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="490-DO-Jrs"/>
@@ -38,16 +59,19 @@
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="bMi-V7-l5Z" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="-16" id="Ba2-EM-vjX"/>
                             <constraint firstAttribute="trailingMargin" secondItem="bMi-V7-l5Z" secondAttribute="trailing" constant="-16" id="GkX-lR-WeH"/>
-                            <constraint firstItem="NHv-1i-bXW" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="63" id="V8C-g7-qyp"/>
+                            <constraint firstItem="EBz-y8-jY4" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="RmG-2I-aR7"/>
+                            <constraint firstItem="NHv-1i-bXW" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="V8C-g7-qyp"/>
+                            <constraint firstItem="EBz-y8-jY4" firstAttribute="baseline" secondItem="NHv-1i-bXW" secondAttribute="baseline" id="aJT-nM-x2d"/>
                             <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="bMi-V7-l5Z" secondAttribute="bottom" id="mrc-0v-M6r"/>
-                            <constraint firstItem="bMi-V7-l5Z" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="ne0-J5-hvu"/>
-                            <constraint firstItem="NHv-1i-bXW" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="oJB-Qe-LaP"/>
+                            <constraint firstItem="bMi-V7-l5Z" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="48" id="ne0-J5-hvu"/>
+                            <constraint firstItem="NHv-1i-bXW" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" constant="16" id="oJB-Qe-LaP"/>
                         </constraints>
                     </view>
+                    <nil key="simulatedStatusBarMetrics"/>
                     <connections>
                         <outlet property="contentView" destination="bMi-V7-l5Z" id="GJm-wU-fvm"/>
                     </connections>

@@ -34,6 +34,7 @@
                 <constraint firstAttribute="trailing" secondItem="bev-yN-hbS" secondAttribute="trailing" id="Mfb-8h-ldd"/>
                 <constraint firstItem="bev-yN-hbS" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="qfu-0I-2tl"/>
             </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
         </view>
         <searchDisplayController id="Kld-3t-jvF">
             <connections>

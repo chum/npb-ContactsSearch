@@ -399,6 +399,11 @@
 
 #endif
                 NSLog(@"==========\n");
+
+#if USE_UNIFIED_CONTACTS
+                break;
+
+#endif
             }
 #if USE_UNIFIED_CONTACTS
         }
@@ -406,6 +411,12 @@
     }
 
     NSLog(@"%s .. end.\n\n\n", __PRETTY_FUNCTION__);
+}
+
+
+- (void) debugUpdateSortCriteria
+{
+    [self updateTableItems];
 }
 
 
