@@ -15,11 +15,15 @@
 
 + (instancetype) contactWithABRecord: (ABRecordRef) abrecord;
 + (void) initialize;
++ (void) reinitialize;
 
 - (ABRecordRef) contact;
 - (NSString*) displayString;
 - (NSString*) longDisplayString;
 - (NSString*) phoneNumber;
+- (void) updateScore;
+
+- (void) debugGetScoreParams;
 
 @property(readonly, nonatomic) int score;
 @end

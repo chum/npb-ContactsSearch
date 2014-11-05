@@ -171,6 +171,16 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
 }
 
 
++ (void) reinitialize
+{
+    SINGLEVALUE_PROPERTIES = nil;
+    MULTIVALUE_PROPERTIES = nil;
+    MULTIBONUS_PROPERTIES = nil;
+
+    [ContactRecord initialize];
+}
+
+
 - (void) dealloc
 {
     if (abContact)
@@ -276,10 +286,37 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
 - (void) updateScore
 {
     // Ref: http://dbader.org/blog/guessing-favorite-contacts-ios
+    // Highly modified, but we started there.
 
     const NSInteger maxMultiValue               = 3;                            // give bonus for more, but not more than this many
 
     _score = 0;
+
+    // if no name, we're done
+    NSString *firstName = (__bridge NSString*) (ABRecordCopyValue(abContact, kABPersonFirstNameProperty));
+    NSString *lastName  = (__bridge NSString*) (ABRecordCopyValue(abContact, kABPersonLastNameProperty));
+
+    if ((firstName == nil)
+    &&  (lastName  == nil) )
+    {
+        return;     // fast bail
+    }
+
+    // Bail if no phone#
+    ABMultiValueRef valueRef = ABRecordCopyValue(abContact, kABPersonPhoneProperty);
+    if (valueRef)
+    {
+        CFIndex count = ABMultiValueGetCount(valueRef);
+        CFRelease(valueRef);
+        if (count == 0)
+        {
+            return;                                                             // no phone#
+        }
+    }
+    else
+    {
+        return;                                                                 // no phone#
+    }
 
     // Give a score penalty to contacts that belong to an organization
     // instead of a person.
@@ -293,17 +330,6 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
     {
         CFRelease(contactKind);
     }
-
-    // if no name, we're done
-    NSString *firstName = (__bridge NSString*) (ABRecordCopyValue(abContact, kABPersonFirstNameProperty));
-    NSString *lastName  = (__bridge NSString*) (ABRecordCopyValue(abContact, kABPersonLastNameProperty));
-
-    if ((firstName == nil)
-    &&  (lastName  == nil) )
-    {
-        return;     // fast bail
-    }
-
 
     // Give score for all non-nil single-value properties
     // (e.g. first name, last name, ...).
@@ -355,6 +381,8 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
     {
         _score = 0;
     }
+
+    //NSLog(@"%s %@ %@: %d", __PRETTY_FUNCTION__, firstName, lastName, _score);
 }
 
 
@@ -388,12 +416,6 @@ static NSArray *MULTIBONUS_PROPERTIES = nil;
         scoreSameAsContact  = [ud integerForKey: UD_SORT_SAME_AS_CONTACT];
         scoreThreshhold     = [ud integerForKey: UD_SORT_THRESHOLD];
     }
-
-    SINGLEVALUE_PROPERTIES = nil;
-    MULTIVALUE_PROPERTIES = nil;
-    MULTIBONUS_PROPERTIES = nil;
-
-    [ContactRecord initialize];
 }
 
 

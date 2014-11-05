@@ -416,6 +416,38 @@
 
 - (void) debugUpdateSortCriteria
 {
+    [ContactRecord reinitialize];
+
+    int allContactsCount = (int) [_allContacts count];
+    NSLog(@"There are %d entries in your contacts list.", allContactsCount);
+
+    // check all contact-sets
+    for (int ii = 0 ; ii < allContactsCount ; ++ii)
+    {
+#if USE_UNIFIED_CONTACTS
+        NSSet *oneContactSet = [_allContacts objectAtIndex: ii];
+
+        // check each contact within a set
+        NSArray *contacts = [oneContactSet allObjects];
+        int contactCount = (int) [contacts count];
+        for (int index = 0 ; index < contactCount ; ++index)
+        {
+            ContactRecord *oneContact = [contacts objectAtIndex: index];
+
+#else
+            ContactRecord *oneContact = [_allContacts objectAtIndex: ii];
+
+#endif
+            [oneContact debugGetScoreParams];
+            [oneContact updateScore];
+
+#if USE_UNIFIED_CONTACTS
+        }
+#endif
+    }
+
+    _allContacts = [[self sortContacts: _allContacts] mutableCopy];
+
     [self updateTableItems];
 }
 
